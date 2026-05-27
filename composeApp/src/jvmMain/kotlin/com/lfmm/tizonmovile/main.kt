@@ -6,7 +6,7 @@ import com.lfmm.tizonmovile.di.initKoin
 
 fun main() = application {
     initKoin(
-        apiBaseUrl = "http://52.67.50.46:8080/api"
+        apiBaseUrl = "http://56.125.227.216:8080/api"
     )
     Window(
         onCloseRequest = ::exitApplication,

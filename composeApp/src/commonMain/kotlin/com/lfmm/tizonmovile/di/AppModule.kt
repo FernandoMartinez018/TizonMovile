@@ -29,7 +29,7 @@ val appModule = module {
         // Valor por defecto: se sobreescribe en cada plataforma
         // Android: BuildConfig.API_BASE_URL
         // iOS: Info.plist o constante hardcodeada
-        "http://52.67.50.46:8080/api"
+        "http://56.125.227.216:8080/api"
     }
 
     // ── Capa de red ───────────────────────────────────────────────────────
