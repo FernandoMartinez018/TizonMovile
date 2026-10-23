@@ -14,7 +14,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lfmm.tizonmovile.data.model.BoundingBox
+import com.lfmm.tizonmovile.data.model.ClassId
+import com.lfmm.tizonmovile.data.model.Region
 import com.lfmm.tizonmovile.ui.theme.TizonColors
 
 /**
@@ -35,7 +36,7 @@ import com.lfmm.tizonmovile.ui.theme.TizonColors
 @Composable
 fun BoundingBoxOverlay(
     modifier: Modifier = Modifier,
-    boundingBoxes: List<BoundingBox>
+    boundingBoxes: List<Region>
 ) {
     if (boundingBoxes.isEmpty()) return
 
@@ -47,10 +48,10 @@ fun BoundingBoxOverlay(
         boundingBoxes.forEach { box ->
             val color = colorForLabel(box.label)
 
-            val left   = box.x      * canvasW
-            val top    = box.y      * canvasH
-            val width  = box.width  * canvasW
-            val height = box.height * canvasH
+            val left   = (box.x      * canvasW).toFloat()
+            val top    = (box.y      * canvasH).toFloat()
+            val width  = (box.width  * canvasW).toFloat()
+            val height = (box.height * canvasH).toFloat()
 
             // Rectángulo principal (delgado)
             drawRect(
@@ -106,15 +107,12 @@ fun BoundingBoxOverlay(
     }
 }
 
-private fun colorForLabel(label: String): Color = when (label) {
-    "Sano"           -> TizonColors.GreenPrimary
-    "Tizon Temprano" -> TizonColors.OrangeWarn
-    "Tizon Tardio"   -> TizonColors.RedDanger
-    else             -> Color.White
+private fun colorForLabel(label: ClassId): Color = when (label) {
+    ClassId.SANO         -> TizonColors.GreenPrimary
+    ClassId.TIZON_TARDIO -> TizonColors.RedDanger
 }
 
-private fun labelShort(label: String): String = when (label) {
-    "Tizon Temprano" -> "Temp."
-    "Tizon Tardio"   -> "Tardío"
-    else             -> label
+private fun labelShort(label: ClassId): String = when (label) {
+    ClassId.SANO         -> "Sano"
+    ClassId.TIZON_TARDIO -> "Tardío"
 }

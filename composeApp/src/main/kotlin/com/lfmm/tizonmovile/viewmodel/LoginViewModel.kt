@@ -1,5 +1,6 @@
 package com.lfmm.tizonmovile.viewmodel
 
+import com.lfmm.tizonmovile.data.api.AppError
 import com.lfmm.tizonmovile.data.model.LoginResponse
 import com.lfmm.tizonmovile.data.model.UiState
 import com.lfmm.tizonmovile.data.repository.AnalysisRepository
@@ -56,42 +57,15 @@ class LoginViewModel(private val repository: AnalysisRepository) {
                     _uiState.value = UiState.Success(response)
                 }
                 .onFailure { error ->
-                    error.printStackTrace()
-
-                    val message = when {
-                        error.message?.contains("401") == true -> "Usuario o contraseña incorrectos."
-                        error.message?.contains("timeout", ignoreCase = true) == true ->
-                            "El servidor no responde. Verifica tu conexión."
-                        else -> "Error al conectar. Verifica que el servidor esté disponible."
+                    val message = when (error) {
+                        AppError.Unauthorized -> "Usuario o contraseña incorrectos"
+                        AppError.Network -> "Sin conexión. Revisa tu internet"
+                        else -> "El servicio no está disponible, intenta más tarde"
                     }
                     _uiState.value = UiState.Error(message)
                 }
         }
     }
-
-//    fun login(username: String, password: String) {
-//        if (username.isBlank()) {
-//            _uiState.value = UiState.Error("Ingresa tu usuario.")
-//            return
-//        }
-//        if (password.isBlank()) {
-//            _uiState.value = UiState.Error("Ingresa tu contraseña.")
-//            return
-//        }
-//
-//        _uiState.value = UiState.Loading
-//
-//        // Simulación de respuesta exitosa
-//        _uiState.value = UiState.Success(
-//            LoginResponse(
-//                token = "fake-jwt-token-123",
-//                username = username,
-//                expiresIn = 3600L // 1 hora
-//            )
-//        )
-//    }
-
-
 
     /** Resetea el estado a Idle. Llamar después de navegar post-login. */
     fun resetState() {

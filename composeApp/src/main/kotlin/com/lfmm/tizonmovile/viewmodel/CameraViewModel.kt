@@ -1,5 +1,6 @@
 package com.lfmm.tizonmovile.viewmodel
 
+import com.lfmm.tizonmovile.data.api.AppError
 import com.lfmm.tizonmovile.data.model.CameraUiState
 import com.lfmm.tizonmovile.data.model.SessionSummary
 import com.lfmm.tizonmovile.data.repository.AnalysisRepository
@@ -54,12 +55,11 @@ class CameraViewModel(private val repository: AnalysisRepository) {
     fun startSession() {
         scope.launch {
             repository.startSession()
-                .onSuccess { response ->
-                    _state.update { it.copy(sessionId = response.sessionId) }
+                .onSuccess { session ->
+                    _state.update { it.copy(sessionId = session.sessionId, stats = null, currentResult = null) }
                 }
                 .onFailure { error ->
-                    error.printStackTrace()
-                    _state.update { it.copy(error = "No se pudo iniciar sesión: ${error.message}") }
+                    _state.update { it.copy(error = userMessage(error)) }
                 }
         }
     }
@@ -75,12 +75,11 @@ class CameraViewModel(private val repository: AnalysisRepository) {
         scope.launch {
             repository.endSession(sessionId)
                 .onSuccess {
-                    _state.update { st -> st.copy(isActive = false) }
+                    _state.update { st -> st.copy(isActive = false, sessionId = null) }
                     loadHistory()
                 }
                 .onFailure { error ->
-                    error.printStackTrace()
-                    _state.update { it.copy(error = error.message) }
+                    _state.update { it.copy(error = userMessage(error)) }
                 }
         }
     }
@@ -89,10 +88,9 @@ class CameraViewModel(private val repository: AnalysisRepository) {
     fun loadHistory() {
         scope.launch {
             repository.getHistory()
-                .onSuccess { sessions -> _history.value = sessions }
+                .onSuccess { page -> _history.value = page.items }
                 .onFailure { error ->
-                    error.printStackTrace()
-                    _state.update { it.copy(error = "Error al cargar historial: ${error.message}") }
+                    _state.update { it.copy(error = userMessage(error)) }
                 }
         }
     }
@@ -145,30 +143,34 @@ class CameraViewModel(private val repository: AnalysisRepository) {
     }
 
     private suspend fun processFrame(frameB64: String) {
-        val sessionId = _state.value.sessionId
+        val sessionId = _state.value.sessionId ?: return
         _state.update { it.copy(isAnalyzing = true) }
 
-        repository.analyzeFrame(frameB64, sessionId)
+        repository.analyzeFrame(sessionId, frameB64)
             .onSuccess { result ->
                 _state.update { current ->
-                    val newAffected = if (result.isAffected)
-                        current.affectedFrames + 1
-                    else
-                        current.affectedFrames
-
                     current.copy(
-                        currentResult  = result,
-                        framesAnalyzed = current.framesAnalyzed + 1,
-                        affectedFrames = newAffected,
-                        isAnalyzing    = false,
-                        error          = null
+                        currentResult = result,
+                        stats         = result.sessionStats ?: current.stats,
+                        isAnalyzing   = false,
+                        error         = null
                     )
                 }
             }
             .onFailure { error ->
-                error.printStackTrace()
-                _state.update { it.copy(isAnalyzing = false, error = error.message) }
+                // Un frame corrupto generado por la propia app no se muestra (RF-07 CA2).
+                val message = if (error == AppError.InvalidImage) null else userMessage(error)
+                _state.update { it.copy(isAnalyzing = false, error = message) }
             }
+    }
+
+    // Textos provisionales: F3-MOB-03 los pasa a strings.xml con los estados de RF-07.
+    private fun userMessage(error: Throwable): String = when (error) {
+        AppError.Network -> "Sin conexión"
+        AppError.IaUnavailable, AppError.IaTimeout -> "Servicio no disponible. Reintentando…"
+        AppError.SessionNotActive -> "Este escaneo ya terminó. Inicia uno nuevo."
+        AppError.Unauthorized -> "Tu sesión expiró, inicia sesión de nuevo"
+        else -> "El servicio no está disponible, intenta más tarde"
     }
 
     fun clearError() = _state.update { it.copy(error = null) }

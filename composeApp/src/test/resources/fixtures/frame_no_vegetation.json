@@ -1,0 +1,4 @@
+{"frame_id":"0b8c8f3e-3333-4c2a-9d0e-cccccccccccc","session_id":"0b8c8f3e-2222-4c2a-9d0e-bbbbbbbbbbbb",
+ "status":"NO_VEGETATION","label":null,"confidence":null,"probabilities":null,"regions":[],
+ "frame_width":640,"frame_height":480,"model_version":"mobilenetv2-2c-2026.04","latency_ms":420,
+ "session_stats":{"total_frames":1,"analyzed_frames":0,"affected_frames":0,"no_vegetation_frames":1,"affection_pct":0,"severity":"NONE","avg_confidence":null,"dominant_label":null}}

@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lfmm.tizonmovile.data.model.ClassId
 import com.lfmm.tizonmovile.data.model.SessionSummary
 import com.lfmm.tizonmovile.ui.theme.TizonColors
 import com.lfmm.tizonmovile.viewmodel.CameraViewModel
@@ -42,7 +43,7 @@ fun ReportScreen(viewModel: CameraViewModel, onBack: () -> Unit) {
                 ActiveSessionCard(
                     framesAnalyzed = state.framesAnalyzed,
                     affectionPct   = state.affectionPct,
-                    dominantLabel  = state.currentResult?.label ?: "—",
+                    dominantLabel  = state.currentResult?.label?.let { if (it == ClassId.SANO) "Sano" else "Tizón tardío" } ?: "—",
                     onEndSession   = { viewModel.endSession() }
                 )
             }
@@ -184,7 +185,7 @@ private fun RecommendationsCard(affectionPct: Float) {
 
 @Composable
 private fun HistoryCard(session: SessionSummary) {
-    val affColor = TizonColors.severityColor(session.affectionPct)
+    val affColor = TizonColors.severityColor(session.affectionPct.toFloat())
     val pct = (session.affectionPct * 10).toInt() / 10.0
 
     Surface(
@@ -202,7 +203,7 @@ private fun HistoryCard(session: SessionSummary) {
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 Text(
-                    session.dominantLabel ?: "Sin diagnostico",
+                    session.dominantLabel?.let { if (it == ClassId.SANO) "Sano" else "Tizón tardío" } ?: "Sin diagnóstico",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = TizonColors.TextPrimary

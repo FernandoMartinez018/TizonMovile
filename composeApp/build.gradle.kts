@@ -46,6 +46,10 @@ android {
             buildConfigField("String", "API_BASE_URL", "\"${apiBaseUrl.getOrElse("")}\"")
         }
     }
+    testOptions {
+        // android.util.Log (logger de Ktor en debug) devuelve valores por defecto en pruebas JVM.
+        unitTests.isReturnDefaultValues = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

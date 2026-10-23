@@ -15,6 +15,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lfmm.tizonmovile.data.model.CameraUiState
+import com.lfmm.tizonmovile.data.model.ClassId
+import com.lfmm.tizonmovile.data.model.FrameStatus
 import com.lfmm.tizonmovile.ui.components.BoundingBoxOverlay
 import com.lfmm.tizonmovile.ui.components.CameraPreviewContainer
 import com.lfmm.tizonmovile.ui.components.SeverityBar
@@ -63,7 +65,7 @@ fun CameraScreen(
                     isCapturing = state.isActive
                 )
 
-                state.currentResult?.boundingBoxes?.let { bboxes ->
+                state.currentResult?.regions?.let { bboxes ->
                     if (bboxes.isNotEmpty()) {
                         BoundingBoxOverlay(
                             modifier      = Modifier.fillMaxSize(),
@@ -131,9 +133,9 @@ private fun StatusBadge(modifier: Modifier = Modifier, state: CameraUiState) {
         !state.isActive                    -> Triple(TizonColors.TextMuted,    "⏸", "Pausado")
         state.isAnalyzing                  -> Triple(TizonColors.OrangeWarn,   "⏳", "Analizando…")
         result == null                     -> Triple(TizonColors.GreenPrimary, "📷", "Listo")
-        result.label == "Tizon Tardio"    -> Triple(TizonColors.RedDanger,    "⚠", "Tizón Tardío")
-        result.label == "Tizon Temprano"  -> Triple(TizonColors.OrangeWarn,   "⚠", "Tizón Temprano")
-        result.label == "Sano"            -> Triple(TizonColors.GreenPrimary, "✓", "Sano")
+        result.status == FrameStatus.NO_VEGETATION -> Triple(TizonColors.TextMuted, "—", "No veo una hoja")
+        result.label == ClassId.TIZON_TARDIO -> Triple(TizonColors.RedDanger,    "⚠", "Tizón tardío")
+        result.label == ClassId.SANO         -> Triple(TizonColors.GreenPrimary, "✓", "Sano")
         else                               -> Triple(TizonColors.TextMuted,    "—", "Sin detección")
     }
 
@@ -147,7 +149,7 @@ private fun StatusBadge(modifier: Modifier = Modifier, state: CameraUiState) {
             Text(text, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = bgColor)
 
             result?.let {
-                val pct = (it.confidencePct * 10).toInt() / 10.0
+                val pct = ((it.confidence ?: 0.0) * 1000).toInt() / 10.0
                 Text("$pct%", fontSize = 11.sp, color = bgColor.copy(alpha = 0.7f))
             }
         }
@@ -208,7 +210,7 @@ private fun MetricsPanel(modifier: Modifier = Modifier, state: CameraUiState) {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            result.probabilities.forEach { (label, prob) ->
+                            listOfNotNull(result.probabilities?.let { "Sano" to it.sano }, result.probabilities?.let { "Tizon Tardio" to it.tizonTardio }).forEach { (label, prob) ->
                                 val pctProb = (prob * 1000).toInt() / 10.0
 
                                 val color = when (label) {
