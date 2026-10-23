@@ -29,3 +29,11 @@ envía los frames a la API (`TizonApiIntegration`) y muestra el diagnóstico en 
 scripts/gradlew-docker.sh :composeApp:assembleDebug :composeApp:testDebugUnitTest
 ```
 El APK queda en `composeApp/build/outputs/apk/debug/`.
+
+## CI/CD (GitHub Actions)
+`.github/workflows/ci.yml` corre en cada push y PR a `dev`, `qa` y `main`: APK debug (artefacto) + pruebas unitarias y gitleaks.
+En cada push a `main` compila la APK *release* y la publica como artefacto con su `SHA256SUMS.txt`.
+Configuración en GitHub (*Settings → Secrets and variables → Actions*):
+- Variable `TIZON_API_BASE_URL` (p. ej. `https://<PUBLIC_HOST>/api/`). Sin ella, el job de release no corre.
+- Secretos `TIZON_KEYSTORE_BASE64` (`base64 -w0 tizon-release.jks`), `TIZON_KEYSTORE_PASSWORD`, `TIZON_KEY_ALIAS` y `TIZON_KEY_PASSWORD`.
+
