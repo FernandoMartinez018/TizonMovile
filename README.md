@@ -14,6 +14,14 @@ envía los frames a la API (`TizonApiIntegration`) y muestra el diagnóstico en 
 - JDK 17 o superior y Android SDK (platform 36, build-tools 36.0.0), **o**
 - Docker: `scripts/gradlew-docker.sh` compila dentro de `ghcr.io/cirruslabs/android-sdk:36`, sin instalar el SDK.
 
+## Configuración
+| Propiedad | Dónde | Descripción |
+|---|---|---|
+| `tizon.apiBaseUrl` | `-Ptizon.apiBaseUrl=...` o `local.properties` | URL base de la API, terminada en `/api/`. En *debug*, por defecto `http://10.0.2.2:8080/api/` (la API del PC visto desde el emulador). En *release* es **obligatoria y debe ser `https://`**: si falta, la compilación falla. |
+
+- *Release* no permite tráfico HTTP (`network_security_config`). *Debug* solo permite HTTP hacia `10.0.2.2` y `localhost`.
+- Los logs HTTP solo existen en *debug*, en nivel `INFO` y con el header `Authorization` oculto.
+
 ## Compilar y probar
 ```bash
 ./gradlew :composeApp:assembleDebug :composeApp:testDebugUnitTest

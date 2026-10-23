@@ -24,13 +24,7 @@ import org.koin.dsl.module
  */
 val appModule = module {
 
-    // ── Configuración (URL de la API) ─────────────────────────────────────
-    single<String>(qualifier = org.koin.core.qualifier.named("apiBaseUrl")) {
-        // Valor por defecto: se sobreescribe en cada plataforma
-        // Android: BuildConfig.API_BASE_URL
-        // iOS: Info.plist o constante hardcodeada
-        "http://56.125.227.216:8080/api"
-    }
+    // La URL de la API la registra initKoin() desde BuildConfig.API_BASE_URL.
 
     // ── Capa de red ───────────────────────────────────────────────────────
     single {

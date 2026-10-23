@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 // Proyecto solo Android (decisión D-01): módulo Android con Jetpack Compose, sin Kotlin Multiplatform.
 plugins {
@@ -7,6 +8,13 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
 }
+
+// URL de la API: -Ptizon.apiBaseUrl=... o la clave tizon.apiBaseUrl de local.properties (fuera de git).
+val localProperties = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+}
+val apiBaseUrl: Provider<String> = providers.gradleProperty("tizon.apiBaseUrl")
+    .orElse(providers.provider { localProperties.getProperty("tizon.apiBaseUrl") })
 
 android {
     namespace = "com.lfmm.tizonmovile"
@@ -22,6 +30,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     packaging {
         resources {
@@ -29,8 +38,12 @@ android {
         }
     }
     buildTypes {
+        getByName("debug") {
+            buildConfigField("String", "API_BASE_URL", "\"${apiBaseUrl.getOrElse("http://10.0.2.2:8080/api/")}\"")
+        }
         getByName("release") {
             isMinifyEnabled = false
+            buildConfigField("String", "API_BASE_URL", "\"${apiBaseUrl.getOrElse("")}\"")
         }
     }
     compileOptions {
@@ -44,6 +57,17 @@ kotlin {
         jvmTarget.set(JvmTarget.JVM_17)
     }
 }
+
+// La APK release solo puede apuntar a HTTPS (RNF-SEG-06).
+val checkReleaseApiBaseUrl by tasks.registering {
+    val url = apiBaseUrl.orElse("")
+    doLast {
+        require(url.get().startsWith("https://")) {
+            "La variante release requiere -Ptizon.apiBaseUrl=https://<host>/api/ (valor actual: '${url.get()}')"
+        }
+    }
+}
+tasks.matching { it.name == "preReleaseBuild" }.configureEach { dependsOn(checkReleaseApiBaseUrl) }
 
 dependencies {
     implementation(libs.androidx.core.ktx)

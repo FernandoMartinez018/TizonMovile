@@ -1,5 +1,6 @@
 package com.lfmm.tizonmovile.data.api
 
+import com.lfmm.tizonmovile.BuildConfig
 import com.lfmm.tizonmovile.data.model.*
 import com.lfmm.tizonmovile.network.provideHttpClient
 import io.ktor.client.*
@@ -9,7 +10,6 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.bodyAsText
-import io.ktor.client.statement.request
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
@@ -30,12 +30,14 @@ class TizonApiClient(
             })
         }
 
-        install(Logging) {
-            logger = Logger.DEFAULT
-            level = LogLevel.ALL
+        // Solo en debug, sin cuerpos (frames Base64) y ocultando el token (RNF-SEG-08).
+        if (BuildConfig.DEBUG) {
+            install(Logging) {
+                logger = Logger.ANDROID
+                level = LogLevel.INFO
+                sanitizeHeader { it == HttpHeaders.Authorization }
+            }
         }
-
-
 
         install(HttpTimeout) {
             requestTimeoutMillis = 35_000
@@ -54,17 +56,11 @@ class TizonApiClient(
     // 🔐 LOGIN
     suspend fun login(username: String, password: String): Result<LoginResponse> =
         runCatching {
-            val httpResponse = httpClient.post("api/auth/login") {
+            val response: LoginResponse = httpClient.post("auth/login") {
                 setBody(LoginRequest(username, password))
-            }
-
-            println("👉 URL final: ${httpResponse.request.url}")
-            println("👉 Status: ${httpResponse.status}")
-
-            val response: LoginResponse = httpResponse.body()
+            }.body()
 
             jwtToken = response.token
-            println("👉 token: ${response.token}")
             response
         }
 
@@ -77,17 +73,17 @@ class TizonApiClient(
     // 📡 SESIONES
     suspend fun startSession(): Result<SessionStartResponse> =
         runCatching {
-            httpClient.post("api/analysis/sessions/start").body()
+            httpClient.post("analysis/sessions/start").body()
         }
 
     suspend fun endSession(sessionId: String): Result<SessionSummary> =
         runCatching {
-            httpClient.post("api/analysis/sessions/$sessionId/end").body()
+            httpClient.post("analysis/sessions/$sessionId/end").body()
         }
 
     suspend fun getHistory(): Result<List<SessionSummary>> =
         runCatching {
-            httpClient.get("api/analysis/sessions/history").body()
+            httpClient.get("analysis/sessions/history").body()
         }
 
     // 🧠 ANÁLISIS
@@ -97,9 +93,7 @@ class TizonApiClient(
     ): Result<AnalysisResult> =
         runCatching {
 
-            val response = httpClient.post("api/analysis/frame") {
-
-                println("TOKEN EN REQUEST: $jwtToken")
+            val response = httpClient.post("analysis/frame") {
 
                 jwtToken?.let {
                     header("Authorization", "Bearer $it")
