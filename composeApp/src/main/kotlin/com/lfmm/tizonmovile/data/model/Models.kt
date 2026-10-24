@@ -39,6 +39,17 @@ data class User(
 )
 
 @Serializable
+data class RegisterRequest(
+    val username: String,
+    val password: String,
+    @SerialName("full_name") val fullName: String,
+)
+
+/** Cambios de rol o habilitación (ADMIN). Los campos nulos no se envían. */
+@Serializable
+data class UpdateUserRequest(val role: Role? = null, val enabled: Boolean? = null)
+
+@Serializable
 data class LoginResponse(
     val token: String,
     @SerialName("expires_at") val expiresAt: String,
@@ -196,26 +207,3 @@ data class ApiErrorBody(
     @SerialName("request_id") val requestId: String? = null,
     val fields: Map<String, String>? = null,
 )
-
-// ── Estados de UI (pantallas actuales; se rediseñan en F3) ────────────────
-
-/** Estado genérico para operaciones asíncronas */
-sealed class UiState<out T> {
-    data object Idle    : UiState<Nothing>()
-    data object Loading : UiState<Nothing>()
-    data class  Success<T>(val data: T) : UiState<T>()
-    data class  Error(val message: String) : UiState<Nothing>()
-}
-
-/** Estado de la pantalla de cámara. Las estadísticas vienen del backend (session_stats). */
-data class CameraUiState(
-    val isActive: Boolean = false,
-    val currentResult: FrameAnalysis? = null,
-    val sessionId: String? = null,
-    val stats: SessionStats? = null,
-    val isAnalyzing: Boolean = false,
-    val error: String? = null,
-) {
-    val affectionPct: Float get() = stats?.affectionPct?.toFloat() ?: 0f
-    val framesAnalyzed: Int get() = stats?.analyzedFrames ?: 0
-}

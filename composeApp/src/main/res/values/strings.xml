@@ -58,6 +58,11 @@
     <string name="scan_sheet_expand">Ver detalle</string>
     <string name="scan_sheet_collapse">Ocultar detalle</string>
     <string name="scan_no_result_yet">Apunta a una hoja para ver el diagnóstico</string>
+    <string name="scan_session_closed">Ese escaneo ya había terminado. Inicia uno nuevo.</string>
+    <string name="scan_camera_needed">Para escanear necesitamos la cámara</string>
+    <string name="scan_field_dialog_title">Finca o lote</string>
+    <string name="scan_field_dialog_save">Guardar</string>
+    <string name="scan_field_edit_cd">Cambiar finca o lote</string>
     <string name="scan_exit_title">¿Finalizar escaneo?</string>
     <string name="scan_exit_body">Tienes un escaneo en curso.</string>
     <string name="scan_exit_finish">Finalizar</string>
@@ -163,6 +168,14 @@
     <string name="users_title">Usuarios</string>
     <string name="users_enabled">Habilitado</string>
     <string name="users_role">Rol</string>
+
+    <!-- Notificaciones (RF-11 CA2) -->
+    <string name="notif_channel_alerts">Alertas de cultivo</string>
+    <string name="notif_alerts_title">Alertas de tizón tardío</string>
+    <plurals name="notif_alerts_body">
+        <item quantity="one">Hay %d alerta abierta. Toca para revisarla.</item>
+        <item quantity="other">Hay %d alertas abiertas. Toca para revisarlas.</item>
+    </plurals>
 
     <!-- Navegación -->
     <string name="nav_scan">Escanear</string>

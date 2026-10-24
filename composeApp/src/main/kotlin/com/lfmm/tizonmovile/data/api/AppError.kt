@@ -28,6 +28,9 @@ sealed class AppError(message: String? = null) : Exception(message) {
     /** 409 USERNAME_TAKEN en el registro. */
     data object UsernameTaken : AppError()
 
+    /** 429 TOO_MANY_ATTEMPTS: 5 intentos fallidos de login bloquean el usuario 5 minutos. */
+    data object TooManyAttempts : AppError()
+
     /** 400 VALIDATION_ERROR con el mensaje por campo (snake_case). */
     data class Validation(val fields: Map<String, String>) : AppError()
 
@@ -44,6 +47,7 @@ sealed class AppError(message: String? = null) : Exception(message) {
             "IA_TIMEOUT" -> IaTimeout
             "INVALID_IMAGE" -> InvalidImage
             "USERNAME_TAKEN" -> UsernameTaken
+            "TOO_MANY_ATTEMPTS" -> TooManyAttempts
             "VALIDATION_ERROR" -> Validation(body.fields.orEmpty())
             else -> when {
                 status == 401 -> Unauthorized

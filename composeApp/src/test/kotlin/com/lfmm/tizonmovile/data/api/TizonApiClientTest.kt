@@ -12,17 +12,25 @@ import kotlin.test.assertIs
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
-/** F2-MOB-01: mapeo de las respuestas de error del contrato a [AppError] (MockEngine de Ktor). */
+/** F2-MOB-01 / RF-02 CA5: mapeo de errores del contrato a [AppError] y manejo del 401 (MockEngine de Ktor). */
 class TizonApiClientTest {
 
     private val requests = mutableListOf<HttpRequestData>()
+    private var token: String? = null
+    private var unauthorizedCalls = 0
 
     private fun client(status: HttpStatusCode, body: String = ""): TizonApiClient =
-        TizonApiClient("http://api.test/api/", MockEngine { request ->
-            requests += request
-            respond(ByteReadChannel(body), status, headersOf(HttpHeaders.ContentType, "application/json"))
-        })
+        TizonApiClient(
+            "http://api.test/api/",
+            tokenProvider = { token },
+            onUnauthorized = { unauthorizedCalls++ },
+            engine = MockEngine { request ->
+                requests += request
+                respond(ByteReadChannel(body), status, headersOf(HttpHeaders.ContentType, "application/json"))
+            },
+        )
 
     private fun error(status: Int, code: String, fields: String = "") =
         """{"status":$status,"code":"$code","message":"msg","timestamp":"2026-11-03T10:15:00Z"$fields}"""
@@ -38,12 +46,21 @@ class TizonApiClientTest {
         assertEquals(AppError.IaTimeout, frameError(HttpStatusCode.GatewayTimeout, "IA_TIMEOUT"))
         assertEquals(AppError.InvalidImage, frameError(HttpStatusCode.BadRequest, "INVALID_IMAGE"))
         assertEquals(AppError.Server, frameError(HttpStatusCode.InternalServerError, "INTERNAL_ERROR"))
+        assertEquals(AppError.TooManyAttempts, frameError(HttpStatusCode.TooManyRequests, "TOO_MANY_ATTEMPTS"))
     }
 
     @Test
-    fun loginConCredencialesInvalidasEsUnauthorized() = runTest {
+    fun loginConCredencialesInvalidasEsUnauthorizedYNoCierraSesion() = runTest {
         val result = client(HttpStatusCode.Unauthorized, error(401, "BAD_CREDENTIALS")).login("u", "p")
         assertEquals(AppError.Unauthorized, result.exceptionOrNull())
+        assertEquals(0, unauthorizedCalls)
+    }
+
+    @Test
+    fun un401ConSesionAvisaQueElTokenExpiro() = runTest {
+        token = "vencido"
+        client(HttpStatusCode.Unauthorized, error(401, "UNAUTHORIZED")).sessions()
+        assertEquals(1, unauthorizedCalls)
     }
 
     @Test
@@ -62,7 +79,7 @@ class TizonApiClientTest {
 
     @Test
     fun sinRedEsNetwork() = runTest {
-        val api = TizonApiClient("http://api.test/api/", MockEngine { throw IOException("sin red") })
+        val api = TizonApiClient("http://api.test/api/", engine = MockEngine { throw IOException("sin red") })
         assertEquals(AppError.Network, api.config().exceptionOrNull())
     }
 
@@ -70,11 +87,14 @@ class TizonApiClientTest {
     fun enviaUnSoloTokenYUnRequestIdPorPeticion() = runTest {
         val login = javaClass.getResource("/fixtures/login_response.json")!!.readText()
         val api = client(HttpStatusCode.OK, login)
-        assertNull(api.login("agricultor1", "clave-segura").exceptionOrNull())
-        api.login("agricultor1", "clave-segura")
+        val response = api.login("agricultor1", "clave-segura").getOrThrow()
+        assertTrue(requests.single().headers[HttpHeaders.Authorization] == null, "el login no lleva token")
+
+        token = response.token   // lo que hace el SessionManager al iniciar sesión
+        api.me()
 
         val second = requests.last()
-        assertEquals("http://api.test/api/auth/login", second.url.toString())
+        assertEquals("http://api.test/api/auth/me", second.url.toString())
         assertEquals(listOf("Bearer eyJhbGciOiJIUzI1NiJ9.e30.x"), second.headers.getAll(HttpHeaders.Authorization))
         val ids = requests.map { it.headers["X-Request-Id"] }
         assertNotNull(ids[0])

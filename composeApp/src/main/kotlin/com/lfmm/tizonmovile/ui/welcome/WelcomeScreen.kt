@@ -42,7 +42,7 @@ import com.lfmm.tizonmovile.ui.theme.Spacing
 import com.lfmm.tizonmovile.ui.theme.TizonTheme
 import kotlinx.coroutines.launch
 
-private data class WelcomePage(val icon: ImageVector, @StringRes val title: Int, @StringRes val body: Int)
+private data class WelcomePage(val icon: ImageVector, @param:StringRes val title: Int, @param:StringRes val body: Int)
 
 private val pages = listOf(
     WelcomePage(Icons.Filled.Eco, R.string.welcome_1_title, R.string.welcome_1_body),

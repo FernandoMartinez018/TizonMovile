@@ -30,9 +30,27 @@ scripts/gradlew-docker.sh :composeApp:assembleDebug :composeApp:testDebugUnitTes
 ```
 El APK queda en `composeApp/build/outputs/apk/debug/`.
 
+## Arquitectura
+| Capa | Contenido |
+|---|---|
+| `data/api` | `TizonApiClient` (Ktor 3, contrato v2, `X-Request-Id` por petición) y `AppError` |
+| `data/auth` | Token cifrado con EncryptedSharedPreferences (`EncryptedTokenStore`) y `SessionManager`: inicio automático si el token sigue vigente; cualquier 401 cierra la sesión y lleva al login con "Tu sesión expiró" |
+| `data/location` | `AndroidLocationProvider` con `LocationManager` (GPS y red, sin Play Services): última posición si tiene menos de 2 min o una lectura nueva con espera máxima de 10 s |
+| `data/repository` | Repositorios por funcionalidad (auth, escaneo, alertas, administración) |
+| `ui/*` | Pantallas sin estado + ViewModels de AndroidX (Koin `koinViewModel`); Navigation Compose con rutas tipadas |
+| `work` | `AlertsWorker` (WorkManager cada 15 min con sesión iniciada) y notificación local del canal "Alertas de cultivo" |
+
+Flujo de escaneo: la sesión se crea al pulsar "Iniciar escaneo"; CameraX entrega un frame solo cuando el
+ViewModel lo pide (uno a la vez), rotado según `rotationDegrees`, escalado a 640 px y en JPEG 80; el siguiente se
+pide `frame_interval_ms` después de la respuesta. 502/504 y la falta de red se reintentan con espera de 2, 4 y 8 s.
+Las cajas se mapean a la vista previa con `PreviewTransform` (FILL_CENTER).
+
+Permisos: cámara (obligatoria; si se rechaza, la app ofrece abrir los ajustes sin cerrarse), ubicación y
+notificaciones (opcionales). La sesión cifrada no se respalda (`allowBackup=false`).
+
 ## Sistema visual y previews
-- Tema propio en `ui/theme/` (tokens de 06-ux-ui, claro y oscuro, todo texto ≥ WCAG AA). No se usan colores
-  fijos fuera del tema. Los textos están en `res/values/strings.xml`.
+- Tema propio en `ui/theme/`: paleta verde y tierra (verde hoja, arena, ocre, musgo, terracota y óxido), claro y
+  oscuro, todo texto ≥ WCAG AA. No se usan colores fijos fuera del tema. Los textos están en `res/values/strings.xml`.
 - Cada pantalla tiene `@Preview` por estado (`@TizonPreviews`: claro, oscuro y fuente al 200 %). Para regenerar
   las capturas PNG sin emulador (Roborazzi + Robolectric):
   ```bash

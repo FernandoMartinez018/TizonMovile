@@ -25,7 +25,7 @@ import com.lfmm.tizonmovile.ui.preview.TizonPreviews
 import com.lfmm.tizonmovile.ui.theme.TizonTheme
 
 /** Destinos de la barra inferior con sesión iniciada (06-ux-ui §Navegación). */
-enum class MainTab(@StringRes val label: Int, val icon: ImageVector) {
+enum class MainTab(@param:StringRes val label: Int, val icon: ImageVector) {
     SCAN(R.string.nav_scan, Icons.Filled.CameraAlt),
     HISTORY(R.string.nav_history, Icons.Filled.History),
     ALERTS(R.string.nav_alerts, Icons.Filled.Notifications),

@@ -1,5 +1,6 @@
 package com.lfmm.tizonmovile.ui.scan
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -66,6 +68,11 @@ data class ScanUiState(
     val lastLabel: ClassId? = null,
     val lastConfidence: Double? = null,
     val stats: SessionStats? = null,
+    /** Tamaño del frame analizado (ya rotado): base para mapear las cajas a la vista previa. */
+    val frameWidth: Int = 0,
+    val frameHeight: Int = 0,
+    /** Aviso puntual (p. ej. la sesión ya había terminado o no se pudo iniciar). */
+    @param:StringRes val notice: Int? = null,
 )
 
 /**
@@ -80,14 +87,21 @@ fun ScanScreen(
     onTogglePause: () -> Unit,
     camera: @Composable (Modifier) -> Unit = { CameraPlaceholder(it) },
     initiallyExpanded: Boolean = true,
+    onEditField: (() -> Unit)? = null,
 ) {
     var sheetExpanded by rememberSaveable { mutableStateOf(initiallyExpanded) }
     BoxWithConstraints(Modifier.fillMaxSize().background(CameraBackdrop)) {
         camera(Modifier.fillMaxSize())
-        RegionOverlay(state.regions, Modifier.fillMaxSize())
+        RegionOverlay(
+            state.regions, Modifier.fillMaxSize(),
+            toView = { region, view -> PreviewTransform.toView(region, state.frameWidth, state.frameHeight, view) },
+        )
         if (state.regions.isEmpty()) GuideFrame(Modifier.align(Alignment.Center).padding(bottom = maxHeight / 4))
 
-        TopIndicators(state, Modifier.align(Alignment.TopCenter).fillMaxWidth().padding(Spacing.l))
+        TopIndicators(
+            state, onEditField.takeIf { !state.isScanning },
+            Modifier.align(Alignment.TopCenter).fillMaxWidth().statusBarsPadding().padding(Spacing.l),
+        )
 
         // La tarjeta se desplaza si no cabe (fuente al 200 %); el botón principal siempre queda visible.
         Column(
@@ -102,6 +116,7 @@ fun ScanScreen(
                 if (state.status == ScanStatus.SERVICE_UNAVAILABLE) ErrorBanner(stringResource(R.string.status_unavailable_retry))
                 if (state.status == ScanStatus.OFFLINE) ErrorBanner(stringResource(R.string.status_offline))
                 if (state.status == ScanStatus.NO_LEAF) ErrorBanner(stringResource(R.string.status_no_leaf_hint))
+                state.notice?.let { ErrorBanner(stringResource(it)) }
                 if (state.isScanning) {
                     ResultSheet(
                         state.lastLabel, state.lastConfidence, state.stats,
@@ -118,7 +133,7 @@ fun ScanScreen(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun TopIndicators(state: ScanUiState, modifier: Modifier) {
+private fun TopIndicators(state: ScanUiState, onEditField: (() -> Unit)?, modifier: Modifier) {
     FlowRow(
         modifier,
         horizontalArrangement = Arrangement.spacedBy(Spacing.s),
@@ -126,7 +141,15 @@ private fun TopIndicators(state: ScanUiState, modifier: Modifier) {
         itemVerticalAlignment = Alignment.CenterVertically,
     ) {
         StatusChip(state.status)
-        Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surface) {
+        // La finca o lote se puede cambiar antes de iniciar el escaneo.
+        val fieldEditCd = stringResource(R.string.scan_field_edit_cd)
+        Surface(
+            onClick = { onEditField?.invoke() },
+            enabled = onEditField != null,
+            shape = MaterialTheme.shapes.extraLarge,
+            color = MaterialTheme.colorScheme.surface,
+            modifier = Modifier.semantics { if (onEditField != null) contentDescription = fieldEditCd },
+        ) {
             Row(Modifier.padding(horizontal = Spacing.m, vertical = Spacing.s), verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
                 Icon(Icons.Filled.Agriculture, contentDescription = null, modifier = Modifier.size(20.dp))

@@ -31,7 +31,7 @@ import com.lfmm.tizonmovile.ui.theme.Spacing
 import com.lfmm.tizonmovile.ui.theme.TizonTheme
 
 /** Estados visibles del escaneo (RF-07 CA3). */
-enum class ScanStatus(@StringRes val label: Int) {
+enum class ScanStatus(@param:StringRes val label: Int) {
     READY(R.string.status_ready),
     ANALYZING(R.string.status_analyzing),
     NO_LEAF(R.string.status_no_leaf),

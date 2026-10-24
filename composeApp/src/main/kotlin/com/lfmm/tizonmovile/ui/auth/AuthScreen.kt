@@ -43,7 +43,7 @@ import com.lfmm.tizonmovile.ui.theme.TizonTheme
 enum class AuthMode { LOGIN, REGISTER }
 
 /** Errores visibles del login/registro (06-ux-ui §3). */
-enum class AuthError(@StringRes val message: Int) {
+enum class AuthError(@param:StringRes val message: Int) {
     BAD_CREDENTIALS(R.string.error_bad_credentials),
     OFFLINE(R.string.error_offline),
     SERVER(R.string.error_server),

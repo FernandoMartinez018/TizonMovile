@@ -21,14 +21,17 @@ import kotlin.coroutines.cancellation.CancellationException
 /**
  * Cliente de la API pública (contracts/tizon-api.yaml). Todas las llamadas devuelven
  * [Result]; los errores llegan como [AppError] (nunca como texto libre).
+ *
+ * @param tokenProvider token vigente (lo guarda el SessionManager cifrado), o null sin sesión.
+ * @param onUnauthorized se invoca ante un 401 con sesión iniciada: el token expiró o el usuario
+ *   fue deshabilitado (RF-02 CA5). No se invoca en login ni registro.
  */
 class TizonApiClient(
     baseUrl: String,
+    private val tokenProvider: () -> String? = { null },
+    private val onUnauthorized: () -> Unit = {},
     engine: HttpClientEngine = OkHttp.create(),
 ) {
-
-    @Volatile
-    private var jwtToken: String? = null
 
     private val http: HttpClient = HttpClient(engine) {
         expectSuccess = false
@@ -57,21 +60,17 @@ class TizonApiClient(
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
             header("X-Request-Id", UUID.randomUUID().toString())
-            jwtToken?.let { bearerAuth(it) }
+            tokenProvider()?.let { bearerAuth(it) }
         }
     }
 
     // ── Autenticación ─────────────────────────────────────────────────────
 
     suspend fun login(username: String, password: String): Result<LoginResponse> =
-        call<LoginResponse> { post("auth/login") { setBody(LoginRequest(username, password)) } }
-            .onSuccess { jwtToken = it.token }
+        call(authenticated = false) { post("auth/login") { setBody(LoginRequest(username, password)) } }
 
-    fun logout() {
-        jwtToken = null
-    }
-
-    fun isAuthenticated(): Boolean = jwtToken != null
+    suspend fun register(request: RegisterRequest): Result<User> =
+        call(authenticated = false) { post("auth/register") { setBody(request) } }
 
     suspend fun me(): Result<User> = call { get("auth/me") }
 
@@ -97,16 +96,42 @@ class TizonApiClient(
 
     suspend fun endSession(sessionId: String): Result<SessionSummary> = call { post("sessions/$sessionId/end") }
 
+    suspend fun cancelSession(sessionId: String): Result<SessionSummary> = call { post("sessions/$sessionId/cancel") }
+
+    // ── Alertas ───────────────────────────────────────────────────────────
+
+    suspend fun alerts(status: AlertStatus? = null, since: String? = null): Result<List<Alert>> =
+        call {
+            get("alerts") {
+                status?.let { parameter("status", it.name) }
+                since?.let { parameter("since", it) }
+            }
+        }
+
+    suspend fun acknowledgeAlert(alertId: String): Result<Alert> = call { post("alerts/$alertId/ack") }
+
+    // ── Administración ────────────────────────────────────────────────────
+
+    suspend fun users(): Result<List<User>> = call { get("admin/users") }
+
+    suspend fun updateUser(userId: String, request: UpdateUserRequest): Result<User> =
+        call { patch("admin/users/$userId") { setBody(request) } }
+
     fun close() = http.close()
 
-    private suspend inline fun <reified T> call(crossinline request: suspend HttpClient.() -> HttpResponse): Result<T> =
+    private suspend inline fun <reified T> call(
+        authenticated: Boolean = true,
+        crossinline request: suspend HttpClient.() -> HttpResponse,
+    ): Result<T> =
         try {
             val response = http.request()
             if (response.status.isSuccess()) {
                 Result.success(response.body<T>())
             } else {
                 val body = runCatching { response.body<ApiErrorBody>() }.getOrNull()
-                Result.failure(AppError.from(response.status.value, body))
+                val error = AppError.from(response.status.value, body)
+                if (authenticated && error == AppError.Unauthorized) onUnauthorized()
+                Result.failure(error)
             }
         } catch (e: CancellationException) {
             throw e

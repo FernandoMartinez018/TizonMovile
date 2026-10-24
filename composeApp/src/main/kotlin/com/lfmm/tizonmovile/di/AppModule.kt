@@ -1,67 +1,54 @@
 package com.lfmm.tizonmovile.di
 
+import com.lfmm.tizonmovile.BuildConfig
 import com.lfmm.tizonmovile.data.api.TizonApiClient
-import com.lfmm.tizonmovile.data.repository.AnalysisRepository
-import com.lfmm.tizonmovile.data.repository.AnalysisRepositoryImpl
-import com.lfmm.tizonmovile.viewmodel.CameraViewModel
-import com.lfmm.tizonmovile.viewmodel.LoginViewModel
-import org.koin.core.context.startKoin
-import org.koin.core.qualifier.named
-import org.koin.dsl.KoinAppDeclaration
+import com.lfmm.tizonmovile.data.auth.EncryptedTokenStore
+import com.lfmm.tizonmovile.data.auth.SessionManager
+import com.lfmm.tizonmovile.data.auth.TokenStore
+import com.lfmm.tizonmovile.data.location.AndroidLocationProvider
+import com.lfmm.tizonmovile.data.location.LocationProvider
+import com.lfmm.tizonmovile.data.repository.*
+import com.lfmm.tizonmovile.data.settings.SharedPrefsUserPreferences
+import com.lfmm.tizonmovile.data.settings.UserPreferences
+import com.lfmm.tizonmovile.ui.AppViewModel
+import com.lfmm.tizonmovile.ui.alerts.AlertsViewModel
+import com.lfmm.tizonmovile.ui.auth.AuthViewModel
+import com.lfmm.tizonmovile.ui.history.HistoryViewModel
+import com.lfmm.tizonmovile.ui.profile.ProfileViewModel
+import com.lfmm.tizonmovile.ui.profile.UsersViewModel
+import com.lfmm.tizonmovile.ui.scan.ScanViewModel
+import com.lfmm.tizonmovile.ui.summary.SessionDetailViewModel
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-/**
- * Módulo Koin con todas las dependencias de la aplicación.
- *
- * Jerarquía de dependencias:
- *   TizonApiClient (singleton)
- *     └── AnalysisRepositoryImpl (singleton)
- *           ├── LoginViewModel (singleton de sesión)
- *           └── CameraViewModel (singleton de sesión)
- *
- * Se usa singleton para los ViewModels porque deben sobrevivir
- * a las recomposiciones de Compose.
- */
+/** Dependencias de la app (Koin). Los ViewModels son de AndroidX: sobreviven a la rotación. */
 val appModule = module {
+    single<TokenStore> { EncryptedTokenStore(androidContext()) }
+    single { SessionManager(get()) }
+    single<UserPreferences> { SharedPrefsUserPreferences(androidContext()) }
+    single<LocationProvider> { AndroidLocationProvider(androidContext()) }
 
-    // La URL de la API la registra initKoin() desde BuildConfig.API_BASE_URL.
-
-    // ── Capa de red ───────────────────────────────────────────────────────
     single {
+        val session = get<SessionManager>()
         TizonApiClient(
-            baseUrl = get(qualifier = named("apiBaseUrl"))
+            baseUrl = BuildConfig.API_BASE_URL,
+            tokenProvider = session::token,
+            onUnauthorized = session::expire,
         )
     }
 
-    // ── Repositorio ───────────────────────────────────────────────────────
-    single<AnalysisRepository> {
-        AnalysisRepositoryImpl(apiClient = get())
-    }
+    single<AuthRepository> { ApiAuthRepository(get(), get()) }
+    single<ScanRepository> { ApiScanRepository(get()) }
+    single<AlertRepository> { ApiAlertRepository(get()) }
+    single<AdminRepository> { ApiAdminRepository(get()) }
 
-    // ── ViewModels ────────────────────────────────────────────────────────
-    single { LoginViewModel(repository = get()) }
-    single { CameraViewModel(repository = get()) }
-}
-
-/**
- * Inicializa Koin. Llamar desde el punto de entrada de cada plataforma:
- *   - Android: Application.onCreate()
- *   - iOS: MainViewController (antes de ComposeUIViewController)
- */
-fun initKoin(
-    apiBaseUrl: String,
-    appDeclaration: KoinAppDeclaration = {}
-) {
-    startKoin {
-        appDeclaration()
-        modules(
-            // Módulo de configuración con la URL real de la plataforma
-            module {
-                single<String>(qualifier = org.koin.core.qualifier.named("apiBaseUrl")) {
-                    apiBaseUrl
-                }
-            },
-            appModule
-        )
-    }
+    viewModel { AppViewModel(get(), get()) }
+    viewModel { AuthViewModel(get(), get()) }
+    viewModel { ScanViewModel(get(), get(), get()) }
+    viewModel { HistoryViewModel(get()) }
+    viewModel { (sessionId: String) -> SessionDetailViewModel(sessionId, get()) }
+    viewModel { AlertsViewModel(get(), get()) }
+    viewModel { (appVersion: String) -> ProfileViewModel(get(), get(), get(), appVersion) }
+    viewModel { UsersViewModel(get(), get()) }
 }
