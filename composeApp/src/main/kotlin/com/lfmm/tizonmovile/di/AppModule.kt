@@ -46,7 +46,7 @@ val appModule = module {
     viewModel { AppViewModel(get(), get()) }
     viewModel { AuthViewModel(get(), get()) }
     viewModel { ScanViewModel(get(), get(), get()) }
-    viewModel { HistoryViewModel(get()) }
+    viewModel { HistoryViewModel(get(), get()) }
     viewModel { (sessionId: String) -> SessionDetailViewModel(sessionId, get()) }
     viewModel { AlertsViewModel(get(), get()) }
     viewModel { (appVersion: String) -> ProfileViewModel(get(), get(), get(), appVersion) }

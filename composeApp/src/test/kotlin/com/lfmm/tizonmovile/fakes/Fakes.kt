@@ -42,13 +42,14 @@ class FakeScanRepository : ScanRepository {
     var startResult: Result<SessionSummary> = Result.success(summary("s-1"))
     val frameResults = ArrayDeque<Result<FrameAnalysis>>()
     var endResult: Result<SessionSummary> = Result.success(summary("s-1", SessionStatus.COMPLETED))
-    var historyPages: (Int) -> Result<SessionPage> = { Result.success(SessionPage(emptyList(), it, 20, 0)) }
+    var historyPages: suspend (Int) -> Result<SessionPage> = { Result.success(SessionPage(emptyList(), it, 20, 0)) }
 
     val startRequests = mutableListOf<StartSessionRequest>()
     var framesSent = 0
     var ended = 0
     var cancelled = 0
     val historyRequests = mutableListOf<Int>()
+    val historyUsernames = mutableListOf<String?>()
 
     override suspend fun config() = configResult
     override suspend fun startSession(request: StartSessionRequest): Result<SessionSummary> {
@@ -67,8 +68,9 @@ class FakeScanRepository : ScanRepository {
         cancelled++
         return Result.success(summary(sessionId, SessionStatus.CANCELLED))
     }
-    override suspend fun history(page: Int, size: Int): Result<SessionPage> {
+    override suspend fun history(page: Int, size: Int, username: String?): Result<SessionPage> {
         historyRequests += page
+        historyUsernames += username
         return historyPages(page)
     }
     override suspend fun session(sessionId: String) = Result.success(summary(sessionId, SessionStatus.COMPLETED))

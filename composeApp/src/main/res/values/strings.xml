@@ -141,6 +141,11 @@
     <string name="history_error">No pudimos cargar el historial</string>
     <string name="history_status_active">En curso</string>
     <string name="history_status_cancelled">Descartado</string>
+    <string name="history_by_user">Usuario: %1$s</string>
+    <string name="history_filter_label">Filtrar por usuario</string>
+    <string name="history_filter_clear">Quitar filtro</string>
+    <string name="history_filter_empty_title">No hay escaneos de %1$s</string>
+    <string name="history_filter_empty_body">Revisa el nombre de usuario o quita el filtro.</string>
 
     <!-- Alertas -->
     <string name="alerts_title">Alertas</string>

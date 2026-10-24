@@ -161,7 +161,8 @@ fun TizonApp(appVm: AppViewModel = koinViewModel()) {
                 val vm: HistoryViewModel = koinViewModel()
                 val state by vm.state.collectAsStateWithLifecycle()
                 HistoryScreen(state, vm::refresh, vm::loadMore, onOpen = { nav.navigate(DetailRoute(it.sessionId)) },
-                    onStartScan = { nav.navigate(ScanTab) { popUpTo(ScanTab) { inclusive = true } } })
+                    onStartScan = { nav.navigate(ScanTab) { popUpTo(ScanTab) { inclusive = true } } },
+                    isStaff = vm.isStaff, onFilter = vm::applyFilter)
             }
             composable<AlertsTab> {
                 val vm: AlertsViewModel = koinViewModel(key = "alerts-$userKey", viewModelStoreOwner = activity)

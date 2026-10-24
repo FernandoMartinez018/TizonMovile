@@ -18,7 +18,8 @@ interface ScanRepository {
     suspend fun analyzeFrame(sessionId: String, frameB64: String, location: Location?): Result<FrameAnalysis>
     suspend fun endSession(sessionId: String): Result<SessionSummary>
     suspend fun cancelSession(sessionId: String): Result<SessionSummary>
-    suspend fun history(page: Int, size: Int): Result<SessionPage>
+    /** [username]: filtro de TECNICO o ADMIN (RF-09 CA4); null = sin filtro. */
+    suspend fun history(page: Int, size: Int, username: String? = null): Result<SessionPage>
     suspend fun session(sessionId: String): Result<SessionSummary>
 }
 
@@ -62,7 +63,7 @@ class ApiScanRepository(private val api: TizonApiClient) : ScanRepository {
         api.analyzeFrame(sessionId, frameB64, location)
     override suspend fun endSession(sessionId: String) = api.endSession(sessionId)
     override suspend fun cancelSession(sessionId: String) = api.cancelSession(sessionId)
-    override suspend fun history(page: Int, size: Int) = api.sessions(page, size)
+    override suspend fun history(page: Int, size: Int, username: String?) = api.sessions(page, size, username)
     override suspend fun session(sessionId: String) = api.session(sessionId)
 }
 

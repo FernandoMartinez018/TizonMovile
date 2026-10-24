@@ -81,11 +81,12 @@ class TizonApiClient(
     suspend fun startSession(request: StartSessionRequest = StartSessionRequest()): Result<SessionSummary> =
         call { post("sessions") { setBody(request) } }
 
-    suspend fun sessions(page: Int = 0, size: Int = 20): Result<SessionPage> =
+    suspend fun sessions(page: Int = 0, size: Int = 20, username: String? = null): Result<SessionPage> =
         call {
             get("sessions") {
                 parameter("page", page)
                 parameter("size", size)
+                parameter("username", username)   // null: Ktor no lo envía
             }
         }
 
