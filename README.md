@@ -30,6 +30,39 @@ scripts/gradlew-docker.sh :composeApp:assembleDebug :composeApp:testDebugUnitTes
 ```
 El APK queda en `composeApp/build/outputs/apk/debug/`.
 
+## APK *release* firmada
+La firma se lee de variables de entorno (RNF-SEG-11, D-05). El keystore vive **fuera del repositorio** (`*.jks`
+está en `.gitignore`). Sin las variables, `assembleRelease` genera una APK sin firmar. R8 reduce y ofusca el código
+(`isMinifyEnabled`, `isShrinkResources`); las reglas propias están en `composeApp/proguard-rules.pro`.
+
+| Variable | Contenido |
+|---|---|
+| `TIZON_KEYSTORE_PATH` | Ruta del keystore en el equipo. `scripts/gradlew-docker.sh` lo monta en solo lectura dentro del contenedor. |
+| `TIZON_KEYSTORE_PASSWORD` | Contraseña del keystore |
+| `TIZON_KEY_ALIAS` | Alias de la llave |
+| `TIZON_KEY_PASSWORD` | Contraseña de la llave (en PKCS12 es la misma del keystore) |
+
+1. Crear el keystore **una sola vez** y respaldarlo fuera del repo. Si se pierde, las APK ya instaladas no se pueden
+   actualizar con una versión nueva.
+   ```bash
+   keytool -genkeypair -keystore ~/tizon/tizon-release.jks -storetype PKCS12 -alias tizon -keyalg RSA -keysize 2048 -validity 10000
+   ```
+2. Compilar con la URL HTTPS de la API. `read -rs` evita que la contraseña quede en el historial de la terminal.
+   ```bash
+   export TIZON_KEYSTORE_PATH=~/tizon/tizon-release.jks TIZON_KEY_ALIAS=tizon
+   read -rsp "Contraseña del keystore: " TIZON_KEYSTORE_PASSWORD; echo
+   export TIZON_KEYSTORE_PASSWORD TIZON_KEY_PASSWORD="$TIZON_KEYSTORE_PASSWORD"
+   scripts/gradlew-docker.sh :composeApp:assembleRelease -Ptizon.apiBaseUrl=https://<PUBLIC_HOST>/api/
+   ```
+3. Verificar la firma y registrar los SHA-256 del entregable (09-despliegue): el del certificado se mantiene entre
+   versiones y sirve para comprobar que la APK es auténtica; el del archivo identifica esa compilación.
+   ```bash
+   scripts/apk-sha256.sh composeApp/build/outputs/apk/release/TizonMovile-1.1.0-release.apk
+   ```
+
+Para instalarla, en el teléfono se habilita "Instalar apps desconocidas" para el explorador de archivos. Si antes
+había una APK *debug*, hay que desinstalarla, porque la firma es distinta.
+
 ## Arquitectura
 | Capa | Contenido |
 |---|---|

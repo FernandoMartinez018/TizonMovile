@@ -17,6 +17,9 @@ val localProperties = Properties().apply {
 val apiBaseUrl: Provider<String> = providers.gradleProperty("tizon.apiBaseUrl")
     .orElse(providers.provider { localProperties.getProperty("tizon.apiBaseUrl") })
 
+// Firma release desde variables de entorno (RNF-SEG-11): el keystore nunca está en git.
+val keystorePath = providers.environmentVariable("TIZON_KEYSTORE_PATH").orNull
+
 android {
     namespace = "com.lfmm.tizonmovile"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -26,8 +29,18 @@ android {
         applicationId = "com.lfmm.tizonmovile"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1.0"   // entrega del 8-nov
+    }
+    signingConfigs {
+        if (keystorePath != null) {
+            create("release") {
+                storeFile = file(keystorePath)
+                storePassword = providers.environmentVariable("TIZON_KEYSTORE_PASSWORD").orNull
+                keyAlias = providers.environmentVariable("TIZON_KEY_ALIAS").orNull
+                keyPassword = providers.environmentVariable("TIZON_KEY_PASSWORD").orNull
+            }
+        }
     }
     buildFeatures {
         compose = true
@@ -43,7 +56,11 @@ android {
             buildConfigField("String", "API_BASE_URL", "\"${apiBaseUrl.getOrElse("http://10.0.2.2:8080/api/")}\"")
         }
         getByName("release") {
-            isMinifyEnabled = false
+            // R8: reduce y ofusca; lo que se resuelve por reflexión está en proguard-rules.pro.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.findByName("release")   // sin variables: APK sin firmar
             buildConfigField("String", "API_BASE_URL", "\"${apiBaseUrl.getOrElse("")}\"")
         }
     }
@@ -57,6 +74,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
+
+// Nombre del entregable (09-despliegue): TizonMovile-1.1.0-release.apk
+base.archivesName.set("TizonMovile-${android.defaultConfig.versionName}")
 
 kotlin {
     compilerOptions {
