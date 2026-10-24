@@ -43,10 +43,11 @@ fun PrimaryScanButton(
             enabled = enabled,
             modifier = Modifier.fillMaxWidth().heightIn(min = Spacing.scanButton),
             shape = MaterialTheme.shapes.extraLarge,
+            // "Finalizar" en tierra (secundario): no es un error, es el cierre normal del escaneo.
             colors = if (isScanning) {
                 ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError,
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary,
                 )
             } else {
                 ButtonDefaults.buttonColors()

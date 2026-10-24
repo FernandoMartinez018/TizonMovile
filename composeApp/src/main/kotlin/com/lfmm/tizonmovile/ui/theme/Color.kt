@@ -5,19 +5,23 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
-// Tokens de 06-ux-ui §Sistema visual. Todo texto pasa WCAG AA (≥ 4,5:1) sobre su fondo.
-// Ajustes frente a la tabla inicial: severityLow #9E7700 → #8A6800 y severityWarning #C25E00 → #A85200
-// (4,1:1 y 4,3:1 no alcanzaban AA). No se usan colores fijos fuera de este archivo.
+// Paleta verde y tierra (decisión del usuario, 23-oct): verde hoja, arena, ocre, musgo, terracota y
+// óxido; sin rojos puros, rosados ni azules. Tokens base de 06-ux-ui; todo texto pasa WCAG AA (≥ 4,5:1)
+// sobre su fondo, verificado por cálculo. No se usan colores fijos fuera de este archivo.
 
 internal val LightColors = lightColorScheme(
-    primary = Color(0xFF2E6B30),
+    primary = Color(0xFF2E6B30),            // verde hoja
     onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFFB5F1B0),
-    onPrimaryContainer = Color(0xFF002106),
-    secondary = Color(0xFF7A5C2E),
+    primaryContainer = Color(0xFFC2E5B6),
+    onPrimaryContainer = Color(0xFF0B3A0E),
+    secondary = Color(0xFF7A5C2E),          // tierra
     onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = Color(0xFFFFDDB3),
-    onSecondaryContainer = Color(0xFF291800),
+    secondaryContainer = Color(0xFFEEDCC0), // arena
+    onSecondaryContainer = Color(0xFF2B1A05),
+    tertiary = Color(0xFF5B6B2E),           // musgo
+    onTertiary = Color(0xFFFFFFFF),
+    tertiaryContainer = Color(0xFFDDE6B8),
+    onTertiaryContainer = Color(0xFF1A2000),
     background = Color(0xFFFAFAF5),
     onBackground = Color(0xFF1A1C18),
     surface = Color(0xFFFFFFFF),
@@ -26,14 +30,10 @@ internal val LightColors = lightColorScheme(
     onSurfaceVariant = Color(0xFF43483F),
     outline = Color(0xFF73796E),
     outlineVariant = Color(0xFFC3C8BC),
-    error = Color(0xFFB3261E),
+    error = Color(0xFF9C3B1F),              // terracota oscura
     onError = Color(0xFFFFFFFF),
-    errorContainer = Color(0xFFF9DEDC),
-    onErrorContainer = Color(0xFF410E0B),
-    tertiary = Color(0xFF38656A),
-    onTertiary = Color(0xFFFFFFFF),
-    tertiaryContainer = Color(0xFFBCEBF0),
-    onTertiaryContainer = Color(0xFF002023),
+    errorContainer = Color(0xFFF7DDD2),     // terracota clara
+    onErrorContainer = Color(0xFF3D1406),
     // Contenedores (tarjetas, barra inferior, diálogos): neutros verdosos; el texto de color pasa AA hasta #EEF0E8.
     surfaceDim = Color(0xFFDDDED7),
     surfaceBright = Color(0xFFFAFAF5),
@@ -50,12 +50,16 @@ internal val LightColors = lightColorScheme(
 internal val DarkColors = darkColorScheme(
     primary = Color(0xFF8CD48A),
     onPrimary = Color(0xFF0A3A0E),
-    primaryContainer = Color(0xFF14521A),
-    onPrimaryContainer = Color(0xFFB5F1B0),
+    primaryContainer = Color(0xFF1E4E20),
+    onPrimaryContainer = Color(0xFFC2E5B6),
     secondary = Color(0xFFE2C08D),
     onSecondary = Color(0xFF412D05),
     secondaryContainer = Color(0xFF5B4319),
-    onSecondaryContainer = Color(0xFFFFDDB3),
+    onSecondaryContainer = Color(0xFFEEDCC0),
+    tertiary = Color(0xFFC2CF94),
+    onTertiary = Color(0xFF2D3400),
+    tertiaryContainer = Color(0xFF434C18),
+    onTertiaryContainer = Color(0xFFDDE6B8),
     background = Color(0xFF121411),
     onBackground = Color(0xFFE3E3DC),
     surface = Color(0xFF1C1F1A),
@@ -64,14 +68,10 @@ internal val DarkColors = darkColorScheme(
     onSurfaceVariant = Color(0xFFC3C8BC),
     outline = Color(0xFF8D9387),
     outlineVariant = Color(0xFF43483F),
-    error = Color(0xFFFF8F85),
-    onError = Color(0xFF601410),
-    errorContainer = Color(0xFF8C1D18),
-    onErrorContainer = Color(0xFFF9DEDC),
-    tertiary = Color(0xFFA0CFD4),
-    onTertiary = Color(0xFF00363B),
-    tertiaryContainer = Color(0xFF1F4D52),
-    onTertiaryContainer = Color(0xFFBCEBF0),
+    error = Color(0xFFF2A68A),
+    onError = Color(0xFF4E1A0A),
+    errorContainer = Color(0xFF6E2A14),
+    onErrorContainer = Color(0xFFFFDBCD),
     surfaceDim = Color(0xFF121411),
     surfaceBright = Color(0xFF383A35),
     surfaceContainerLowest = Color(0xFF0C0F0B),
@@ -84,7 +84,10 @@ internal val DarkColors = darkColorScheme(
     inversePrimary = Color(0xFF2E6B30),
 )
 
-/** Colores de severidad (no existen en el ColorScheme de Material 3). */
+/**
+ * Colores de severidad (no existen en el ColorScheme de Material 3): de verde a ocre, terracota y
+ * óxido. Siempre van con icono y texto, así que el color nunca es la única señal.
+ */
 @Immutable
 data class SeverityColors(
     val none: Color,
@@ -96,18 +99,18 @@ data class SeverityColors(
 )
 
 internal val LightSeverity = SeverityColors(
-    none = Color(0xFF2E7D32),
-    low = Color(0xFF8A6800),
-    warning = Color(0xFFA85200),
-    critical = Color(0xFFB3261E),
+    none = Color(0xFF2D7231),      // verde
+    low = Color(0xFF7A6500),       // ocre
+    warning = Color(0xFFA04A16),   // terracota
+    critical = Color(0xFF8E2A1C),  // óxido
     onSeverity = Color(0xFFFFFFFF),
 )
 
 internal val DarkSeverity = SeverityColors(
     none = Color(0xFF7FCB83),
-    low = Color(0xFFE3BC4E),
-    warning = Color(0xFFF5A262),
-    critical = Color(0xFFFF8F85),
+    low = Color(0xFFD6BE52),
+    warning = Color(0xFFEBA26F),
+    critical = Color(0xFFE58A72),
     onSeverity = Color(0xFF121411),
 )
 
