@@ -165,6 +165,25 @@ data class SessionPage(
     val total: Long,
 )
 
+// ── Alertas ───────────────────────────────────────────────────────────────
+
+@Serializable
+enum class AlertStatus { OPEN, ACKNOWLEDGED }
+
+@Serializable
+data class Alert(
+    @SerialName("alert_id") val alertId: String,
+    @SerialName("session_id") val sessionId: String,
+    val username: String,
+    val severity: Severity,
+    @SerialName("affection_pct") val affectionPct: Double,
+    val location: Location? = null,
+    @SerialName("field_name") val fieldName: String? = null,
+    val status: AlertStatus,
+    @SerialName("created_at") val createdAt: String,
+    @SerialName("acknowledged_by") val acknowledgedBy: String? = null,
+)
+
 // ── Errores ───────────────────────────────────────────────────────────────
 
 /** Cuerpo Error del contrato. `message` viene en español, apto para mostrarse. */

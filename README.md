@@ -30,6 +30,16 @@ scripts/gradlew-docker.sh :composeApp:assembleDebug :composeApp:testDebugUnitTes
 ```
 El APK queda en `composeApp/build/outputs/apk/debug/`.
 
+## Sistema visual y previews
+- Tema propio en `ui/theme/` (tokens de 06-ux-ui, claro y oscuro, todo texto ≥ WCAG AA). No se usan colores
+  fijos fuera del tema. Los textos están en `res/values/strings.xml`.
+- Cada pantalla tiene `@Preview` por estado (`@TizonPreviews`: claro, oscuro y fuente al 200 %). Para regenerar
+  las capturas PNG sin emulador (Roborazzi + Robolectric):
+  ```bash
+  scripts/gradlew-docker.sh :composeApp:recordRoborazziDebug   # → composeApp/build/outputs/roborazzi/
+  ```
+  La copia para revisión está en `../docs/ux/` (índice en `docs/ux/README.md`).
+
 ## CI/CD (GitHub Actions)
 `.github/workflows/ci.yml` corre en cada push y PR a `dev`, `qa` y `main`: APK debug (artefacto) + pruebas unitarias y gitleaks.
 En cada push a `main` compila la APK *release* y la publica como artefacto con su `SHA256SUMS.txt`.

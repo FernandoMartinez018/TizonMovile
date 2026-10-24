@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.roborazzi)
 }
 
 // URL de la API: -Ptizon.apiBaseUrl=... o la clave tizon.apiBaseUrl de local.properties (fuera de git).
@@ -49,6 +50,7 @@ android {
     testOptions {
         // android.util.Log (logger de Ktor en debug) devuelve valores por defecto en pruebas JVM.
         unitTests.isReturnDefaultValues = true
+        unitTests.isIncludeAndroidResources = true   // Robolectric (capturas de los @Preview)
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -90,7 +92,7 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.foundation)
     implementation(libs.compose.material3)
-    implementation(libs.compose.material.icons.core)
+    implementation(libs.compose.material.icons.extended)   // R8 elimina los íconos sin usar en release
     implementation(libs.compose.ui.tooling.preview)
     debugImplementation(libs.compose.ui.tooling)
 
@@ -109,4 +111,21 @@ dependencies {
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.ktor.client.mock)
+
+    // Capturas PNG de todos los @Preview sin emulador (06-ux-ui §Entregables): recordRoborazziDebug
+    testImplementation(libs.robolectric)
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.roborazzi.preview.scanner)
+    testImplementation(libs.composable.preview.scanner)
+    testImplementation(libs.compose.ui.test.junit4)
+    debugImplementation(libs.compose.ui.test.manifest)
+}
+
+roborazzi {
+    generateComposePreviewRobolectricTests {
+        enable = true
+        packages = listOf("com.lfmm.tizonmovile.ui")
+        includePrivatePreviews = true
+    }
 }

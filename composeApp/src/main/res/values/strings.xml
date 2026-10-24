@@ -1,3 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Microcopy (06-ux-ui §Textos): español neutro de Colombia, tuteo, frases cortas. Nunca en el código. -->
 <resources>
-    <string name="app_name">TizonMovile</string>
+    <string name="app_name">Tizón Tardío</string>
+
+    <!-- Comunes -->
+    <string name="action_next">Siguiente</string>
+    <string name="action_start">Comenzar</string>
+    <string name="action_retry">Reintentar</string>
+    <string name="action_open_settings">Abrir ajustes</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_close">Cerrar</string>
+    <string name="loading">Cargando…</string>
+    <string name="error_generic">Algo salió mal</string>
+
+    <!-- Clases y severidad (los identificadores técnicos van sin tilde; aquí con tilde) -->
+    <string name="label_sano">Sano</string>
+    <string name="label_tizon_tardio">Tizón tardío</string>
+    <string name="severity_none">Sin afectación</string>
+    <string name="severity_low">Baja</string>
+    <string name="severity_warning">Advertencia</string>
+    <string name="severity_critical">Crítica</string>
+    <string name="severity_cd">Severidad: %1$s</string>
+
+    <!-- Estados del escaneo (RF-07 CA3) -->
+    <string name="status_ready">Listo</string>
+    <string name="status_analyzing">Analizando…</string>
+    <string name="status_no_leaf">No veo una hoja</string>
+    <string name="status_no_leaf_hint">No veo una hoja. Acerca la cámara</string>
+    <string name="status_unavailable">Servicio no disponible</string>
+    <string name="status_unavailable_retry">Servicio no disponible. Reintentando…</string>
+    <string name="status_offline">Sin conexión</string>
+    <string name="status_paused">En pausa</string>
+
+    <!-- Certeza en lenguaje simple (sin porcentajes en bruto) -->
+    <string name="certainty_high">Alta</string>
+    <string name="certainty_medium">Media</string>
+    <string name="certainty_low">Baja</string>
+    <string name="certainty_label">Certeza: %1$s</string>
+
+    <!-- Escanear -->
+    <string name="scan_start">Iniciar escaneo</string>
+    <string name="scan_finish">Finalizar</string>
+    <string name="scan_pause">Pausar</string>
+    <string name="scan_resume">Continuar</string>
+    <string name="scan_guide">Ubica una hoja dentro del marco</string>
+    <string name="scan_last_result">Último diagnóstico</string>
+    <string name="scan_affected">afectado en este escaneo</string>
+    <plurals name="scan_leaves_analyzed">
+        <item quantity="one">%d hoja analizada</item>
+        <item quantity="other">%d hojas analizadas</item>
+    </plurals>
+    <string name="scan_gps_on">Con ubicación</string>
+    <string name="scan_gps_off">Sin ubicación</string>
+    <string name="scan_field_none">Sin finca o lote</string>
+    <string name="scan_field_hint">Finca o lote (opcional)</string>
+    <string name="scan_camera_cd">Vista previa de la cámara</string>
+    <string name="scan_sheet_expand">Ver detalle</string>
+    <string name="scan_sheet_collapse">Ocultar detalle</string>
+    <string name="scan_no_result_yet">Apunta a una hoja para ver el diagnóstico</string>
+    <string name="scan_exit_title">¿Finalizar escaneo?</string>
+    <string name="scan_exit_body">Tienes un escaneo en curso.</string>
+    <string name="scan_exit_finish">Finalizar</string>
+    <string name="scan_exit_keep">Seguir escaneando</string>
+    <string name="scan_exit_discard">Descartar</string>
+
+    <!-- Bienvenida -->
+    <string name="welcome_1_title">Detecta el tizón tardío</string>
+    <string name="welcome_1_body">Apunta la cámara a las hojas de papa y la app te dice si se ven sanas o con tizón tardío.</string>
+    <string name="welcome_2_title">Toma buenas capturas</string>
+    <string name="welcome_2_body">Busca buena luz, pon la cámara a 20–30 cm de la hoja y enfoca una hoja a la vez.</string>
+    <string name="welcome_3_title">Tu privacidad</string>
+    <string name="welcome_3_body">Las imágenes no se guardan. Solo guardamos el resultado de cada escaneo y, si lo permites, el lugar donde lo hiciste.</string>
+    <string name="welcome_page_cd">Página %1$d de %2$d</string>
+
+    <!-- Permisos (se explican antes de pedirlos al sistema) -->
+    <string name="perm_title">Antes de empezar</string>
+    <string name="perm_intro">La app necesita estos permisos:</string>
+    <string name="perm_camera_title">Cámara (obligatoria)</string>
+    <string name="perm_camera_body">Para analizar las hojas en vivo.</string>
+    <string name="perm_location_title">Ubicación (opcional)</string>
+    <string name="perm_location_body">Para guardar dónde hiciste cada escaneo.</string>
+    <string name="perm_notifications_title">Notificaciones (opcional)</string>
+    <string name="perm_notifications_body">Para avisarte de alertas de tu cultivo.</string>
+    <string name="perm_allow">Permitir</string>
+    <string name="perm_granted">Permitido</string>
+    <string name="perm_skip">Ahora no</string>
+    <string name="perm_camera_denied_title">Necesitamos la cámara</string>
+    <string name="perm_camera_denied_body">Sin la cámara no podemos analizar las hojas. Actívala en los ajustes del teléfono.</string>
+
+    <!-- Login y registro -->
+    <string name="auth_login_title">Inicia sesión</string>
+    <string name="auth_register_title">Crea tu cuenta</string>
+    <string name="auth_username">Usuario</string>
+    <string name="auth_password">Contraseña</string>
+    <string name="auth_full_name">Nombre completo</string>
+    <string name="auth_show_password">Mostrar contraseña</string>
+    <string name="auth_hide_password">Ocultar contraseña</string>
+    <string name="auth_login">Entrar</string>
+    <string name="auth_register">Crear cuenta</string>
+    <string name="auth_to_register">Crear cuenta</string>
+    <string name="auth_to_login">Ya tengo cuenta</string>
+    <string name="error_bad_credentials">Usuario o contraseña incorrectos</string>
+    <string name="error_offline">Sin conexión. Revisa tu internet</string>
+    <string name="error_server">El servicio no está disponible, intenta más tarde</string>
+    <string name="error_session_expired">Tu sesión expiró, inicia sesión de nuevo</string>
+    <string name="error_username_taken">Ese usuario ya existe. Elige otro</string>
+    <string name="error_too_many_attempts">Demasiados intentos. Espera 5 minutos e intenta de nuevo</string>
+    <string name="error_required">Este campo es obligatorio</string>
+    <string name="error_password_short">Usa al menos 8 caracteres</string>
+    <string name="error_username_format">De 4 a 40 caracteres: letras, números, punto o guion</string>
+
+    <!-- Resumen y detalle -->
+    <string name="summary_title">Resumen del escaneo</string>
+    <string name="summary_leaves">Hojas analizadas</string>
+    <string name="summary_affected">Hojas con tizón</string>
+    <string name="summary_duration">Duración</string>
+    <string name="summary_duration_value">%1$d min</string>
+    <string name="summary_location">Ubicación</string>
+    <string name="summary_field">Finca o lote</string>
+    <string name="summary_recommendations">Recomendaciones</string>
+    <string name="summary_source">Fuente: %1$s</string>
+    <string name="summary_alert_created">Se generó una alerta para tu técnico</string>
+    <string name="summary_new_scan">Nuevo escaneo</string>
+    <string name="summary_view_history">Ver historial</string>
+    <string name="summary_no_location">Sin ubicación</string>
+    <string name="summary_coordinates">%1$.5f, %2$.5f (±%3$.0f m)</string>
+    <string name="summary_affected_pct">%1$s %%</string>
+    <string name="detail_title">Detalle del escaneo</string>
+
+    <!-- Historial -->
+    <string name="history_title">Historial</string>
+    <string name="history_empty_title">Aún no tienes escaneos</string>
+    <string name="history_empty_body">Cuando termines un escaneo, aparecerá aquí.</string>
+    <string name="history_empty_action">Iniciar primer escaneo</string>
+    <string name="history_error">No pudimos cargar el historial</string>
+    <string name="history_status_active">En curso</string>
+    <string name="history_status_cancelled">Descartado</string>
+
+    <!-- Alertas -->
+    <string name="alerts_title">Alertas</string>
+    <string name="alerts_empty_title">No hay alertas</string>
+    <string name="alerts_empty_body">Te avisaremos si un escaneo supera el umbral de afectación.</string>
+    <string name="alerts_ack">Marcar como atendida</string>
+    <string name="alerts_open">Abierta</string>
+    <string name="alerts_acknowledged">Atendida por %1$s</string>
+    <string name="alerts_by_user">Agricultor: %1$s</string>
+    <string name="alerts_error">No pudimos cargar las alertas</string>
+
+    <!-- Perfil y usuarios -->
+    <string name="profile_title">Perfil</string>
+    <string name="role_agricultor">Agricultor</string>
+    <string name="role_tecnico">Técnico agrónomo</string>
+    <string name="role_admin">Administrador</string>
+    <string name="profile_logout">Cerrar sesión</string>
+    <string name="profile_logout_confirm_title">¿Cerrar sesión?</string>
+    <string name="profile_logout_confirm_body">Tendrás que ingresar de nuevo tu usuario y contraseña.</string>
+    <string name="profile_users">Usuarios</string>
+    <string name="profile_tips">Cómo tomar buenas capturas</string>
+    <string name="profile_about">Acerca de</string>
+    <string name="profile_app_version">Versión de la app: %1$s</string>
+    <string name="profile_model_version">Modelo: %1$s</string>
+    <string name="users_title">Usuarios</string>
+    <string name="users_enabled">Habilitado</string>
+    <string name="users_role">Rol</string>
+
+    <!-- Navegación -->
+    <string name="nav_scan">Escanear</string>
+    <string name="nav_history">Historial</string>
+    <string name="nav_alerts">Alertas</string>
+    <string name="nav_profile">Perfil</string>
+    <string name="nav_back">Volver</string>
+    <plurals name="nav_alerts_badge_cd">
+        <item quantity="one">%d alerta nueva</item>
+        <item quantity="other">%d alertas nuevas</item>
+    </plurals>
 </resources>
