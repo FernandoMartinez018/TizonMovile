@@ -11,7 +11,7 @@ import kotlin.test.assertEquals
 class PreviewTransformTest {
 
     private fun region(x: Double, y: Double, w: Double, h: Double) =
-        Region(x, y, w, h, ClassId.SANO, 0.9, Probabilities(0.9, 0.1))
+        Region(x, y, w, h, ClassId.SANO, 0.9, Probabilities(sano = 0.9, tizonTardio = 0.1))
 
     @Test
     fun vistaMasAltaQueElFrameRecortaLosLados() {

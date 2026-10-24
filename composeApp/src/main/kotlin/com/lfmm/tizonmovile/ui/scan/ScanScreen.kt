@@ -116,6 +116,7 @@ fun ScanScreen(
                 if (state.status == ScanStatus.SERVICE_UNAVAILABLE) ErrorBanner(stringResource(R.string.status_unavailable_retry))
                 if (state.status == ScanStatus.OFFLINE) ErrorBanner(stringResource(R.string.status_offline))
                 if (state.status == ScanStatus.NO_LEAF) ErrorBanner(stringResource(R.string.status_no_leaf_hint))
+                if (state.status == ScanStatus.NOT_POTATO) ErrorBanner(stringResource(R.string.status_not_potato_hint))
                 state.notice?.let { ErrorBanner(stringResource(it)) }
                 if (state.isScanning) {
                     ResultSheet(
@@ -238,6 +239,21 @@ private fun EscanearTarjetaPlegadaPreview() = TizonTheme {
         {}, {}, initiallyExpanded = false,
     )
 }
+
+@TizonPreviews @Composable
+private fun EscanearTizonTempranoPreview() = Preview(
+    ScanUiState(
+        status = ScanStatus.ANALYZING, isScanning = true, fieldName = "Lote 3", hasLocation = true,
+        regions = PreviewData.earlyBlightRegions, lastLabel = ClassId.TIZON_TEMPRANO, lastConfidence = 0.88,
+        stats = PreviewData.stats(analyzed = 12, affected = 4, severity = Severity.CRITICAL, early = 4),
+    ),
+)
+
+@TizonPreviews @Composable
+private fun EscanearNoEsPapaPreview() = Preview(
+    ScanUiState(status = ScanStatus.NOT_POTATO, isScanning = true, fieldName = "Lote 3", stats = activeStats,
+        lastLabel = ClassId.SANO, lastConfidence = 0.7),
+)
 
 @TizonPreviews @Composable
 private fun EscanearSinHojaPreview() = Preview(

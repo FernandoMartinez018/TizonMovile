@@ -4,15 +4,16 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 // Modelos de la API pública según contracts/tizon-api.yaml (JSON en snake_case).
-// Los identificadores técnicos (SANO, TIZON_TARDIO…) se traducen a texto solo en la UI.
+// Los identificadores técnicos (SANO, TIZON_TEMPRANO, TIZON_TARDIO…) se traducen a texto solo en la UI.
 
 // ── Enumeraciones ─────────────────────────────────────────────────────────
 
 @Serializable
 enum class Role { AGRICULTOR, TECNICO, ADMIN }
 
+/** En orden de severidad (contrato: ClassId). */
 @Serializable
-enum class ClassId { SANO, TIZON_TARDIO }
+enum class ClassId { SANO, TIZON_TEMPRANO, TIZON_TARDIO }
 
 @Serializable
 enum class Severity { NONE, LOW, WARNING, CRITICAL }
@@ -20,8 +21,9 @@ enum class Severity { NONE, LOW, WARNING, CRITICAL }
 @Serializable
 enum class SessionStatus { ACTIVE, COMPLETED, CANCELLED }
 
+/** NO_VEGETATION: no hay hoja. NOT_POTATO: la hoja es de otra planta y no se analiza el tizón. */
 @Serializable
-enum class FrameStatus { DETECTED, NO_VEGETATION }
+enum class FrameStatus { DETECTED, NO_VEGETATION, NOT_POTATO }
 
 // ── Autenticación ─────────────────────────────────────────────────────────
 
@@ -100,6 +102,7 @@ data class FrameRequest(
 @Serializable
 data class Probabilities(
     @SerialName("SANO") val sano: Double,
+    @SerialName("TIZON_TEMPRANO") val tizonTemprano: Double? = null,   // null con el modelo anterior de 2 clases
     @SerialName("TIZON_TARDIO") val tizonTardio: Double,
 )
 
@@ -121,10 +124,12 @@ data class SessionStats(
     @SerialName("analyzed_frames") val analyzedFrames: Int,
     @SerialName("affected_frames") val affectedFrames: Int,
     @SerialName("no_vegetation_frames") val noVegetationFrames: Int,
+    @SerialName("not_potato_frames") val notPotatoFrames: Int = 0,
     @SerialName("affection_pct") val affectionPct: Double,
     val severity: Severity,
     @SerialName("avg_confidence") val avgConfidence: Double? = null,
     @SerialName("dominant_label") val dominantLabel: ClassId? = null,
+    @SerialName("label_counts") val labelCounts: Map<ClassId, Int> = emptyMap(),
 )
 
 @Serializable
@@ -162,10 +167,12 @@ data class SessionSummary(
     @SerialName("analyzed_frames") val analyzedFrames: Int,
     @SerialName("affected_frames") val affectedFrames: Int,
     @SerialName("no_vegetation_frames") val noVegetationFrames: Int,
+    @SerialName("not_potato_frames") val notPotatoFrames: Int = 0,
     @SerialName("affection_pct") val affectionPct: Double,
     val severity: Severity,
     @SerialName("avg_confidence") val avgConfidence: Double? = null,
     @SerialName("dominant_label") val dominantLabel: ClassId? = null,
+    @SerialName("label_counts") val labelCounts: Map<ClassId, Int> = emptyMap(),
 )
 
 @Serializable

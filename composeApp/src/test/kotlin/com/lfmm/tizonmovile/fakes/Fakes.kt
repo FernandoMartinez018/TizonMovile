@@ -26,15 +26,21 @@ fun summary(id: String, status: SessionStatus = SessionStatus.ACTIVE) = SessionS
 
 fun detected(label: ClassId = ClassId.TIZON_TARDIO, affected: Int = 1, analyzed: Int = 1) = FrameAnalysis(
     frameId = "f-$affected-$analyzed", sessionId = "s-1", status = FrameStatus.DETECTED, label = label, confidence = 0.9,
-    probabilities = Probabilities(0.1, 0.9), regions = listOf(Region(0.1, 0.1, 0.5, 0.5, label, 0.9, Probabilities(0.1, 0.9))),
+    probabilities = Probabilities(sano = 0.1, tizonTardio = 0.9), regions = listOf(Region(0.1, 0.1, 0.5, 0.5, label, 0.9, Probabilities(sano = 0.1, tizonTardio = 0.9))),
     frameWidth = 480, frameHeight = 640, modelVersion = "test-v1", latencyMs = 300,
-    sessionStats = SessionStats(analyzed, analyzed, affected, 0, affected * 100.0 / analyzed, Severity.CRITICAL, 0.9, label),
+    sessionStats = SessionStats(analyzed, analyzed, affected, 0, 0, affected * 100.0 / analyzed, Severity.CRITICAL, 0.9, label),
+)
+
+val notPotato = FrameAnalysis(
+    frameId = "f-np", sessionId = "s-1", status = FrameStatus.NOT_POTATO, regions = emptyList(),
+    frameWidth = 480, frameHeight = 640, modelVersion = "test-v1", latencyMs = 200,
+    sessionStats = SessionStats(1, 0, 0, 0, notPotatoFrames = 1, affectionPct = 0.0, severity = Severity.NONE),
 )
 
 val noVegetation = FrameAnalysis(
     frameId = "f-nv", sessionId = "s-1", status = FrameStatus.NO_VEGETATION, regions = emptyList(),
     frameWidth = 480, frameHeight = 640, modelVersion = "test-v1", latencyMs = 200,
-    sessionStats = SessionStats(1, 0, 0, 1, 0.0, Severity.NONE),
+    sessionStats = SessionStats(1, 0, 0, 1, 0, 0.0, Severity.NONE),
 )
 
 class FakeScanRepository : ScanRepository {

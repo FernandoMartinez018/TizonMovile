@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.lfmm.tizonmovile.R
+import com.lfmm.tizonmovile.data.model.ClassId
 import com.lfmm.tizonmovile.data.model.SessionSummary
 import com.lfmm.tizonmovile.ui.components.SeverityChip
 import com.lfmm.tizonmovile.ui.formatPct
@@ -107,6 +108,9 @@ fun SummaryContent(summary: SessionSummary) {
             Column(Modifier.padding(Spacing.l), verticalArrangement = Arrangement.spacedBy(Spacing.s)) {
                 DataRow(stringResource(R.string.summary_leaves), summary.analyzedFrames.toString())
                 DataRow(stringResource(R.string.summary_affected), summary.affectedFrames.toString())
+                summary.labelCounts[ClassId.TIZON_TEMPRANO]?.let { DataRow(stringResource(R.string.summary_early_blight), it.toString()) }
+                summary.labelCounts[ClassId.TIZON_TARDIO]?.let { DataRow(stringResource(R.string.summary_late_blight), it.toString()) }
+                if (summary.notPotatoFrames > 0) DataRow(stringResource(R.string.summary_not_potato), summary.notPotatoFrames.toString())
                 durationMinutes(summary)?.let { DataRow(stringResource(R.string.summary_duration), stringResource(R.string.summary_duration_value, it)) }
                 DataRow(stringResource(R.string.summary_field), summary.fieldName ?: stringResource(R.string.scan_field_none))
                 DataRow(

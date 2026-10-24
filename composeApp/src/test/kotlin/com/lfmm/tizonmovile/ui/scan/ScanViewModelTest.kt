@@ -7,6 +7,7 @@ import com.lfmm.tizonmovile.fakes.FakeScanRepository
 import com.lfmm.tizonmovile.fakes.InMemoryPreferences
 import com.lfmm.tizonmovile.fakes.detected
 import com.lfmm.tizonmovile.fakes.noVegetation
+import com.lfmm.tizonmovile.fakes.notPotato
 import com.lfmm.tizonmovile.data.model.ClassId
 import com.lfmm.tizonmovile.ui.components.ScanStatus
 import kotlinx.coroutines.Dispatchers
@@ -93,6 +94,18 @@ class ScanViewModelTest {
         vm.onFrame(frame); runCurrent()
         assertEquals(ScanStatus.NO_LEAF, vm.state.value.status)
         assertEquals(ClassId.SANO, vm.state.value.lastLabel)
+    }
+
+    @Test
+    fun hojaDeOtraPlantaMuestraElEstadoSinCambiarElDiagnostico() = runTest(dispatcher) {
+        val vm = started()
+        repo.frameResults += Result.success(detected(ClassId.TIZON_TEMPRANO, affected = 1, analyzed = 1))
+        repo.frameResults += Result.success(notPotato)
+        vm.onFrame(frame); runCurrent()
+        advanceTimeBy(700); runCurrent()
+        vm.onFrame(frame); runCurrent()
+        assertEquals(ScanStatus.NOT_POTATO, vm.state.value.status)
+        assertEquals(ClassId.TIZON_TEMPRANO, vm.state.value.lastLabel)
     }
 
     @Test

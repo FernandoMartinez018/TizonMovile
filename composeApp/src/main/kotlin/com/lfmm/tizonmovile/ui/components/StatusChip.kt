@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.ImageSearch
 import androidx.compose.material.icons.filled.PauseCircle
 import androidx.compose.material.icons.filled.SyncProblem
@@ -35,6 +36,7 @@ enum class ScanStatus(@param:StringRes val label: Int) {
     READY(R.string.status_ready),
     ANALYZING(R.string.status_analyzing),
     NO_LEAF(R.string.status_no_leaf),
+    NOT_POTATO(R.string.status_not_potato),
     SERVICE_UNAVAILABLE(R.string.status_unavailable),
     OFFLINE(R.string.status_offline),
     PAUSED(R.string.status_paused),
@@ -71,6 +73,7 @@ private fun visuals(status: ScanStatus): Pair<ImageVector, Color> = when (status
     ScanStatus.READY -> Icons.Filled.CameraAlt to MaterialTheme.colorScheme.primary
     ScanStatus.ANALYZING -> Icons.Filled.CameraAlt to MaterialTheme.colorScheme.primary
     ScanStatus.NO_LEAF -> Icons.Filled.ImageSearch to MaterialTheme.colorScheme.onSurfaceVariant
+    ScanStatus.NOT_POTATO -> Icons.Filled.Eco to MaterialTheme.colorScheme.onSurfaceVariant
     ScanStatus.SERVICE_UNAVAILABLE -> Icons.Filled.SyncProblem to TizonTheme.severity.warning
     ScanStatus.OFFLINE -> Icons.Filled.CloudOff to MaterialTheme.colorScheme.error
     ScanStatus.PAUSED -> Icons.Filled.PauseCircle to MaterialTheme.colorScheme.onSurfaceVariant

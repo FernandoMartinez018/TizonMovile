@@ -160,7 +160,11 @@ class ScanViewModel(
         retryAttempt = 0
         _state.update {
             it.copy(
-                status = if (r.status == FrameStatus.NO_VEGETATION) ScanStatus.NO_LEAF else ScanStatus.ANALYZING,
+                status = when (r.status) {
+                    FrameStatus.DETECTED -> ScanStatus.ANALYZING
+                    FrameStatus.NO_VEGETATION -> ScanStatus.NO_LEAF
+                    FrameStatus.NOT_POTATO -> ScanStatus.NOT_POTATO   // otra planta: no hay diagnóstico de tizón
+                },
                 regions = r.regions,
                 frameWidth = r.frameWidth,
                 frameHeight = r.frameHeight,

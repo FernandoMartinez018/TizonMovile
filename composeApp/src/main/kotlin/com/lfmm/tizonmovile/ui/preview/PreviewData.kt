@@ -11,15 +11,24 @@ object PreviewData {
 
     val thresholds = SeverityThresholds(warningPct = 10.0, criticalPct = 30.0)
 
-    private val probsTizon = Probabilities(sano = 0.08, tizonTardio = 0.92)
-    private val probsSano = Probabilities(sano = 0.94, tizonTardio = 0.06)
+    private val probsTizon = Probabilities(sano = 0.05, tizonTemprano = 0.03, tizonTardio = 0.92)
+    private val probsTemprano = Probabilities(sano = 0.04, tizonTemprano = 0.88, tizonTardio = 0.05)
+    private val probsSano = Probabilities(sano = 0.94, tizonTemprano = 0.03, tizonTardio = 0.02)
 
     val regions = listOf(
         Region(0.12, 0.30, 0.38, 0.30, ClassId.TIZON_TARDIO, 0.92, probsTizon),
         Region(0.56, 0.42, 0.30, 0.26, ClassId.SANO, 0.94, probsSano),
     )
+    val earlyBlightRegions = listOf(Region(0.20, 0.28, 0.45, 0.36, ClassId.TIZON_TEMPRANO, 0.88, probsTemprano))
 
-    fun stats(analyzed: Int, affected: Int, severity: Severity) = SessionStats(
+    /** `affected` incluye los dos tizones; `early` son los de tizón temprano. */
+    private fun counts(analyzed: Int, affected: Int, early: Int) =
+        mapOf(ClassId.SANO to analyzed - affected, ClassId.TIZON_TEMPRANO to early, ClassId.TIZON_TARDIO to affected - early)
+
+    private fun dominant(counts: Map<ClassId, Int>) =
+        counts.filterValues { it > 0 }.maxWithOrNull(compareBy({ it.value }, { it.key }))?.key
+
+    fun stats(analyzed: Int, affected: Int, severity: Severity, early: Int = 0) = SessionStats(
         totalFrames = analyzed + 2,
         analyzedFrames = analyzed,
         affectedFrames = affected,
@@ -27,21 +36,24 @@ object PreviewData {
         affectionPct = if (analyzed == 0) 0.0 else affected * 100.0 / analyzed,
         severity = severity,
         avgConfidence = 0.86,
-        dominantLabel = if (affected * 2 >= analyzed) ClassId.TIZON_TARDIO else ClassId.SANO,
+        dominantLabel = dominant(counts(analyzed, affected, early)),
+        labelCounts = counts(analyzed, affected, early),
     )
 
     private fun session(
         id: String, started: String, field: String?, analyzed: Int, affected: Int, severity: Severity,
         status: SessionStatus = SessionStatus.COMPLETED, alertId: String? = null,
-        recommendations: List<Recommendation> = emptyList(),
+        recommendations: List<Recommendation> = emptyList(), early: Int = 0, notPotato: Int = 0,
     ) = SessionSummary(
         sessionId = id, username = agricultor.username, status = status, startedAt = started,
         endedAt = if (status == SessionStatus.COMPLETED) started.replace("10:15", "10:27") else null,
         location = Location(4.71099, -74.07209, 12.0), fieldName = field, alertId = alertId,
         recommendations = recommendations,
-        totalFrames = analyzed + 2, analyzedFrames = analyzed, affectedFrames = affected, noVegetationFrames = 2,
+        totalFrames = analyzed + 2 + notPotato, analyzedFrames = analyzed, affectedFrames = affected,
+        noVegetationFrames = 2, notPotatoFrames = notPotato,
         affectionPct = if (analyzed == 0) 0.0 else affected * 100.0 / analyzed, severity = severity,
-        avgConfidence = 0.86, dominantLabel = if (affected * 2 >= analyzed) ClassId.TIZON_TARDIO else ClassId.SANO,
+        avgConfidence = 0.86, dominantLabel = dominant(counts(analyzed, affected, early)),
+        labelCounts = counts(analyzed, affected, early),
     )
 
     val genericRecommendation = Recommendation(
@@ -49,12 +61,12 @@ object PreviewData {
     )
 
     val criticalSummary = session("s-1", "2026-11-03T10:15:00-05:00", "Lote 3", 24, 11, Severity.CRITICAL,
-        alertId = "a-1", recommendations = listOf(genericRecommendation))
+        alertId = "a-1", recommendations = listOf(genericRecommendation), early = 4, notPotato = 1)
     val healthySummary = session("s-2", "2026-11-02T10:15:00-05:00", "Lote 1", 18, 0, Severity.NONE)
 
     val history = listOf(
         criticalSummary,
-        session("s-3", "2026-11-02T15:40:00-05:00", "Lote 2", 20, 3, Severity.WARNING),
+        session("s-3", "2026-11-02T15:40:00-05:00", "Lote 2", 20, 3, Severity.WARNING, early = 3),
         healthySummary,
         session("s-4", "2026-11-01T09:05:00-05:00", null, 12, 1, Severity.LOW),
     )

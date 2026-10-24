@@ -15,6 +15,7 @@
 
     <!-- Clases y severidad (los identificadores técnicos van sin tilde; aquí con tilde) -->
     <string name="label_sano">Sano</string>
+    <string name="label_tizon_temprano">Tizón temprano</string>
     <string name="label_tizon_tardio">Tizón tardío</string>
     <string name="severity_none">Sin afectación</string>
     <string name="severity_low">Baja</string>
@@ -27,6 +28,8 @@
     <string name="status_analyzing">Analizando…</string>
     <string name="status_no_leaf">No veo una hoja</string>
     <string name="status_no_leaf_hint">No veo una hoja. Acerca la cámara</string>
+    <string name="status_not_potato">No es una hoja de papa</string>
+    <string name="status_not_potato_hint">Esta hoja no parece de papa. Apunta a una hoja de papa</string>
     <string name="status_unavailable">Servicio no disponible</string>
     <string name="status_unavailable_retry">Servicio no disponible. Reintentando…</string>
     <string name="status_offline">Sin conexión</string>
@@ -71,7 +74,7 @@
 
     <!-- Bienvenida -->
     <string name="welcome_1_title">Detecta el tizón tardío</string>
-    <string name="welcome_1_body">Apunta la cámara a las hojas de papa y la app te dice si se ven sanas o con tizón tardío.</string>
+    <string name="welcome_1_body">Apunta la cámara a las hojas de papa y la app te dice si se ven sanas, con tizón temprano o con tizón tardío. Si la hoja no es de papa, te avisa.</string>
     <string name="welcome_2_title">Toma buenas capturas</string>
     <string name="welcome_2_body">Busca buena luz, pon la cámara a 20–30 cm de la hoja y enfoca una hoja a la vez.</string>
     <string name="welcome_3_title">Tu privacidad</string>
@@ -119,6 +122,9 @@
     <string name="summary_title">Resumen del escaneo</string>
     <string name="summary_leaves">Hojas analizadas</string>
     <string name="summary_affected">Hojas con tizón</string>
+    <string name="summary_early_blight">Con tizón temprano</string>
+    <string name="summary_late_blight">Con tizón tardío</string>
+    <string name="summary_not_potato">Hojas que no eran de papa</string>
     <string name="summary_duration">Duración</string>
     <string name="summary_duration_value">%1$d min</string>
     <string name="summary_location">Ubicación</string>
@@ -176,7 +182,7 @@
 
     <!-- Notificaciones (RF-11 CA2) -->
     <string name="notif_channel_alerts">Alertas de cultivo</string>
-    <string name="notif_alerts_title">Alertas de tizón tardío</string>
+    <string name="notif_alerts_title">Alertas de tizón</string>
     <plurals name="notif_alerts_body">
         <item quantity="one">Hay %d alerta abierta. Toca para revisarla.</item>
         <item quantity="other">Hay %d alertas abiertas. Toca para revisarlas.</item>

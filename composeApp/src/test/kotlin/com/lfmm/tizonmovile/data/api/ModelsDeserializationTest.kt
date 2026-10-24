@@ -28,6 +28,33 @@ class ModelsDeserializationTest {
         assertEquals(30.0, config.severity.criticalPct)
         assertEquals(700L, config.frameIntervalMs)
         assertTrue(config.classes.single { it.id == ClassId.TIZON_TARDIO }.affected)
+        assertTrue(config.classes.single { it.id == ClassId.TIZON_TEMPRANO }.affected)
+    }
+
+    @Test
+    fun frameDelModeloAnteriorSinTizonTemprano() {
+        val frame = fixture<FrameAnalysis>("frame_detected.json")
+        assertNull(frame.probabilities!!.tizonTemprano)
+        assertEquals(0, frame.sessionStats!!.notPotatoFrames)
+        assertTrue(frame.sessionStats!!.labelCounts.isEmpty())
+    }
+
+    @Test
+    fun frameTizonTempranoConConteoPorClase() {
+        val frame = fixture<FrameAnalysis>("frame_early_blight.json")
+        assertEquals(ClassId.TIZON_TEMPRANO, frame.label)
+        assertEquals(0.88, frame.probabilities!!.tizonTemprano)
+        val stats = frame.sessionStats!!
+        assertEquals(mapOf(ClassId.SANO to 1, ClassId.TIZON_TEMPRANO to 2, ClassId.TIZON_TARDIO to 0), stats.labelCounts)
+        assertEquals(1, stats.notPotatoFrames)
+    }
+
+    @Test
+    fun hojaDeOtraPlantaEsUnResultadoSinDiagnostico() {
+        val frame = fixture<FrameAnalysis>("frame_not_potato.json")
+        assertEquals(FrameStatus.NOT_POTATO, frame.status)
+        assertNull(frame.label)
+        assertEquals(1, frame.sessionStats!!.notPotatoFrames)
     }
 
     @Test

@@ -26,6 +26,7 @@ import java.util.Locale
 @StringRes
 fun ClassId.labelRes(): Int = when (this) {
     ClassId.SANO -> R.string.label_sano
+    ClassId.TIZON_TEMPRANO -> R.string.label_tizon_temprano
     ClassId.TIZON_TARDIO -> R.string.label_tizon_tardio
 }
 
@@ -53,16 +54,18 @@ fun Severity.color(): Color = when (this) {
     Severity.CRITICAL -> TizonTheme.severity.critical
 }
 
-/** Color de una región o diagnóstico por clase: sano = verde, tizón = rojo. */
+/** Color de una región o diagnóstico por clase: sano = verde, tizón temprano = ocre, tizón tardío = óxido. */
 @Composable
 @ReadOnlyComposable
 fun ClassId.color(): Color = when (this) {
     ClassId.SANO -> TizonTheme.severity.none
+    ClassId.TIZON_TEMPRANO -> TizonTheme.severity.warning
     ClassId.TIZON_TARDIO -> TizonTheme.severity.critical
 }
 
 fun ClassId.icon(): ImageVector = when (this) {
     ClassId.SANO -> Icons.Filled.CheckCircle
+    ClassId.TIZON_TEMPRANO -> Icons.Filled.Warning
     ClassId.TIZON_TARDIO -> Icons.Filled.Dangerous
 }
 

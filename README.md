@@ -1,7 +1,8 @@
 # TizonMovile
 
 App Android (Kotlin + Jetpack Compose) del sistema Tizón Tardío. Escanea hojas de papa con la cámara,
-envía los frames a la API (`TizonApiIntegration`) y muestra el diagnóstico en vivo.
+envía los frames a la API (`TizonApiIntegration`) y muestra el diagnóstico en vivo: sano, tizón temprano o tizón
+tardío. Si la hoja es de otra planta, avisa "No es una hoja de papa" y no muestra diagnóstico.
 
 ## Decisiones de proyecto
 - **Solo Android** (decisión D-01). Se retiró Kotlin Multiplatform (iOS, JVM, `:server`, `:shared`):
