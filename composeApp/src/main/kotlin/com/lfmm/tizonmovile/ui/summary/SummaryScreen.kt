@@ -122,7 +122,12 @@ fun SummaryContent(summary: SessionSummary) {
         }
 
         if (summary.recommendations.isNotEmpty()) {
-            Text(stringResource(R.string.summary_recommendations), style = MaterialTheme.typography.titleLarge)
+            val title = when (summary.recommendations.first().disease) {
+                ClassId.TIZON_TEMPRANO -> R.string.summary_recommendations_early
+                ClassId.TIZON_TARDIO -> R.string.summary_recommendations_late
+                ClassId.SANO -> R.string.summary_recommendations
+            }
+            Text(stringResource(title), style = MaterialTheme.typography.titleLarge)
             summary.recommendations.forEach { rec ->
                 Card(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(Spacing.l), verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {

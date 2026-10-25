@@ -56,12 +56,24 @@ object PreviewData {
         labelCounts = counts(analyzed, affected, early),
     )
 
-    val genericRecommendation = Recommendation(
-        Severity.CRITICAL, "Consulta a un técnico agrónomo", "Texto genérico pendiente de validación agronómica (P-05)",
+    /** Las dos primeras de V6__recommendations_by_disease.sql (API). */
+    private val lateBlightRecommendations = listOf(
+        Recommendation(
+            ClassId.TIZON_TARDIO,
+            "Consulta a un ingeniero agrónomo para confirmar el diagnóstico e iniciar el control: la gota se maneja con " +
+                "un plan de fungicidas que alterna productos preventivos y sistémicos de distinto mecanismo de acción.",
+            "ICA (2011), Manejo fitosanitario del cultivo de la papa, p. 19; FHIA (2014), Manejo integrado del tizón tardío en papa, p. 14",
+        ),
+        Recommendation(
+            ClassId.TIZON_TARDIO,
+            "En parcelas pequeñas, retira a mano las hojas con lesiones apenas las veas: así baja la cantidad de esporas " +
+                "que infectan el resto del cultivo.",
+            "FHIA (2014), Manejo integrado del tizón tardío en papa, p. 7",
+        ),
     )
 
     val criticalSummary = session("s-1", "2026-11-03T10:15:00-05:00", "Lote 3", 24, 11, Severity.CRITICAL,
-        alertId = "a-1", recommendations = listOf(genericRecommendation), early = 4, notPotato = 1)
+        alertId = "a-1", recommendations = lateBlightRecommendations, early = 4, notPotato = 1)
     val healthySummary = session("s-2", "2026-11-02T10:15:00-05:00", "Lote 1", 18, 0, Severity.NONE)
 
     val history = listOf(

@@ -130,6 +130,8 @@
     <string name="summary_location">Ubicación</string>
     <string name="summary_field">Finca o lote</string>
     <string name="summary_recommendations">Recomendaciones</string>
+    <string name="summary_recommendations_early">Recomendaciones para tizón temprano</string>
+    <string name="summary_recommendations_late">Recomendaciones para tizón tardío</string>
     <string name="summary_source">Fuente: %1$s</string>
     <string name="summary_alert_created">Se generó una alerta para tu técnico</string>
     <string name="summary_new_scan">Nuevo escaneo</string>

@@ -148,8 +148,9 @@ data class FrameAnalysis(
     @SerialName("session_stats") val sessionStats: SessionStats? = null,
 )
 
+/** Recomendación para la enfermedad que predominó entre las hojas afectadas de la sesión (P-05). */
 @Serializable
-data class Recommendation(val severity: Severity, val text: String, val source: String)
+data class Recommendation(val disease: ClassId, val text: String, val source: String)
 
 /** Contrato: SessionStats + datos de la sesión (allOf), por eso los campos van planos. */
 @Serializable

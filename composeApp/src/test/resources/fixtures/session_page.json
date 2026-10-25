@@ -1,7 +1,7 @@
 {"items":[{"session_id":"0b8c8f3e-2222-4c2a-9d0e-bbbbbbbbbbbb","username":"agricultor1","status":"COMPLETED",
   "started_at":"2026-11-03T10:15:00-05:00","ended_at":"2026-11-03T10:25:00-05:00",
   "location":{"latitude":4.711,"longitude":-74.0721,"accuracy_m":12.5},"field_name":"Lote 3","alert_id":null,
-  "recommendations":[{"severity":"CRITICAL","text":"Consulta a un técnico agrónomo","source":"Pendiente de validar (P-05)"}],
+  "recommendations":[{"disease":"TIZON_TARDIO","text":"Consulta a un ingeniero agrónomo para confirmar el diagnóstico e iniciar el control.","source":"ICA (2011), Manejo fitosanitario del cultivo de la papa, p. 19"}],
   "total_frames":10,"analyzed_frames":8,"affected_frames":4,"no_vegetation_frames":2,"affection_pct":50.0,
   "severity":"CRITICAL","avg_confidence":0.81,"dominant_label":"TIZON_TARDIO"}],
  "page":0,"size":20,"total":1}

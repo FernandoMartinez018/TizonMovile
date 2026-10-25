@@ -85,7 +85,8 @@ class ModelsDeserializationTest {
         assertEquals(50.0, session.affectionPct)
         assertEquals("Lote 3", session.fieldName)
         assertEquals(12.5, session.location!!.accuracyM)
-        assertEquals("Pendiente de validar (P-05)", session.recommendations.single().source)
+        assertEquals(ClassId.TIZON_TARDIO, session.recommendations.single().disease)
+        assertEquals("ICA (2011), Manejo fitosanitario del cultivo de la papa, p. 19", session.recommendations.single().source)
     }
 
     @Test
