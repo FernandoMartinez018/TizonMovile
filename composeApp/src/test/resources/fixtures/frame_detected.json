@@ -1,0 +1,5 @@
+{"frame_id":"0b8c8f3e-1111-4c2a-9d0e-aaaaaaaaaaaa","session_id":"0b8c8f3e-2222-4c2a-9d0e-bbbbbbbbbbbb",
+ "status":"DETECTED","label":"TIZON_TARDIO","confidence":0.92,"probabilities":{"SANO":0.08,"TIZON_TARDIO":0.92},
+ "regions":[{"x":0.1,"y":0.2,"width":0.3,"height":0.4,"label":"TIZON_TARDIO","confidence":0.92,"probabilities":{"SANO":0.08,"TIZON_TARDIO":0.92}}],
+ "frame_width":640,"frame_height":480,"model_version":"mobilenetv2-2c-2026.04","latency_ms":850,
+ "session_stats":{"total_frames":3,"analyzed_frames":2,"affected_frames":1,"no_vegetation_frames":1,"affection_pct":50.0,"severity":"CRITICAL","avg_confidence":0.88,"dominant_label":"TIZON_TARDIO"}}

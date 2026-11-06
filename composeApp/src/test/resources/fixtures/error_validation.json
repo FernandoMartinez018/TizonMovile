@@ -1,0 +1,2 @@
+{"status":400,"code":"VALIDATION_ERROR","message":"Revisa los datos enviados.","timestamp":"2026-11-03T10:15:00Z",
+ "request_id":"req-1","fields":{"password":"La contraseña debe tener al menos 8 caracteres."}}

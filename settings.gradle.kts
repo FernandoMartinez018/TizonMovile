@@ -1,5 +1,4 @@
 rootProject.name = "TizonMovile"
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
@@ -33,5 +32,3 @@ plugins {
 }
 
 include(":composeApp")
-include(":server")
-include(":shared")
