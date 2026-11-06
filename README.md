@@ -92,6 +92,10 @@ notificaciones (opcionales). La sesión cifrada no se respalda (`allowBackup=fal
   ```
   La copia para revisión está en `../docs/ux/` (índice en `docs/ux/README.md`).
 
+## Despliegue en la nube
+
+Guía paso a paso para desplegar todo el sistema (ejemplo en AWS), con la APK, el servidor y la operación: [docs/despliegue-en-la-nube.md](docs/despliegue-en-la-nube.md).
+
 ## CI/CD (GitHub Actions)
 `.github/workflows/ci.yml` corre en cada push y PR a `dev`, `qa` y `main`: APK debug (artefacto) + pruebas unitarias y gitleaks.
 En cada push a `main` compila la APK *release* y la publica como artefacto con su `SHA256SUMS.txt`.
