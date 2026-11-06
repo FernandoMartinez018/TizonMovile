@@ -1,0 +1,6 @@
+{"frame_id":"0b8c8f3e-5555-4c2a-9d0e-eeeeeeeeeeee","session_id":"0b8c8f3e-2222-4c2a-9d0e-bbbbbbbbbbbb",
+ "status":"NOT_POTATO","label":null,"confidence":null,"probabilities":null,"regions":[],
+ "frame_width":640,"frame_height":480,"model_version":"mobilenetv2-4c-02b1cb27-20261024","latency_ms":400,
+ "session_stats":{"total_frames":1,"analyzed_frames":0,"affected_frames":0,"no_vegetation_frames":0,
+   "not_potato_frames":1,"affection_pct":0,"severity":"NONE","avg_confidence":null,"dominant_label":null,
+   "label_counts":{"SANO":0,"TIZON_TEMPRANO":0,"TIZON_TARDIO":0}}}

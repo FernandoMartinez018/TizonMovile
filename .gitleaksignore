@@ -1,0 +1,3 @@
+# Falsos positivos revisados (gitleaks detect). Solo huellas exactas: un secreto nuevo en el mismo archivo sí se detecta.
+# JWT de juguete del fixture de pruebas (cabecera HS256, cuerpo vacío, firma "x"); no es un token real.
+dbb01d64bfd9b023f7fac318dbac4eb273fe22d6:composeApp/src/test/resources/fixtures/login_response.json:generic-api-key:1
